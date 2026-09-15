@@ -1,0 +1,28 @@
+body{
+    background-color:#000814;
+}
+h1{
+    color: #f8f8f8;
+}
+h2{
+    color: #f8f8f8;
+}
+h3{
+    color: #f8f8f8;
+}
+p
+{
+    font-size:large;
+    font-weight: bolder;
+    color: #f8f8f8;
+}
+label{
+    color: #f8f8f8;
+}
+footer {
+    margin-top: 30px;
+    padding: 15px 0;
+    text-align: center;
+    color: #ffffff;
+    border-top: 1px solid #001d3d;
+}
