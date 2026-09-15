@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <td><span class="badge bg-primary fs-6">${xSiguiente}</span></td>
             <td><code>${u_n.toFixed(5)}</code></td>
         `;
+        // se añade ese hijo a la tabla creada en el html
 
         tbody.appendChild(tr);
 
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Renderizar los gráficos de dispersión
     renderizarGraficos(uValores, n);
 });
-
+// Función para renderizar los gráficos de dispersión se uso la libreria chart.js para hacer los graficos de dispersión
 function renderizarGraficos(uValores, n) {
     // 1. Datos para dispersión 2D de pares consecutivos (U_i, U_{i+1})
     const dataPares = [];

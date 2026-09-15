@@ -6,6 +6,7 @@ function calcularMCD(a, b) {
     }
     return a;
 }
+// Función para validar los campos del formulario antes de enviar
 function validador() {
     const x0 = parseInt(document.getElementById("semilla").value, 10);
     const a = parseInt(document.getElementById("multiplicador").value, 10);
