@@ -7,12 +7,11 @@ let graficoInstancia = null;
 // =========================================================================
 // 1. MOTOR GENERADOR PSEUDOALEATORIO (Reutilizado del Laboratorio 1)
 // =========================================================================
-// Equivalente a la subrutina GU(u) de los diagramas de la cátedra
 function obtenerSiguienteU() {
     const producto = aGlobal * xActual;
     const xSiguiente = producto % mGlobal;
     const u_n = xSiguiente / mGlobal;
-    xActual = xSiguiente; // Actualizamos el estado para la próxima llamada
+    xActual = xSiguiente;
     return u_n;
 }
 
@@ -20,10 +19,9 @@ function obtenerSiguienteU() {
 // 2. SUBRUTINAS DE DISTRIBUCIONES TEÓRICAS DE PROBABILIDAD (Unidad 3)
 // =========================================================================
 
-// A. Distribución de Poisson: Cantidad de eventos que ocurren en un continuo (1 hora)
-// Basado en PROC.POISSON de las diapositivas de la Unidad 3
+// A. Distribución de Poisson (Eventos por hora)
 function procPoisson(lambda) {
-    const b = Math.exp(-lambda); // Límite e^(-lambda)
+    const b = Math.exp(-lambda);
     let x = 0;
     let p = 1.0;
 
@@ -32,18 +30,16 @@ function procPoisson(lambda) {
         p = p * u;
         x = x + 1;
     }
-    return x - 1; // Retorna la cantidad de peticiones que llegaron en esa hora
+    return x - 1;
 }
 
-// B. Distribución Uniforme Continua: Método de la Transformación Inversa
-// Fórmula: x = a + (b - a) * u
+// B. Distribución Uniforme Continua (Transformación Inversa)
 function procUniforme(a, b) {
     const u = obtenerSiguienteU();
     return a + (b - a) * u;
 }
 
-// C. Distribución Normal: Método del Teorema del Límite Central (suma de 12 uniformes)
-// Fórmula: x = desvio * (sum - 6) + media
+// C. Distribución Normal (Teorema del Límite Central - 12 uniformes)
 function procNormal(media, desvio) {
     let sum = 0.0;
     for (let i = 1; i <= 12; i++) {
@@ -75,13 +71,12 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
     const normDesvio = parseFloat(document.getElementById("normDesvio").value);
     const limiteBd = parseFloat(document.getElementById("limiteBd").value);
 
-    // Validación básica de la distribución uniforme
     if (unifA >= unifB) {
         alert("En la distribución Uniforme, el límite mínimo (a) debe ser menor que el máximo (b).");
         return;
     }
 
-    // 2. Inicializar contadores de estado (Equivalente al primer bloque de tu diagrama)
+    // 2. Inicializar contadores de estado
     let totalSimple = 0, lentaSimple = 0;
     let totalBd = 0, lentaBd = 0;
     let totalError = 0;
@@ -92,16 +87,14 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
     tbodySimulacion.innerHTML = "";
     tbodyPorHora.innerHTML = "";
 
-    // 3. BUCLE EXTERNO: Recorre cada hora de simulación
+    // 3. BUCLE EXTERNO: Horas de simulación
     for (let hora = 1; hora <= horasSimular; hora++) {
-        // Generamos cuántas peticiones llegan en esta hora usando Poisson
         const arribosHoy = procPoisson(lambdaPeticiones);
         let simplesHora = 0, bdHora = 0, errorHora = 0;
 
-        // 4. BUCLE INTERNO: Procesa cada petición que llegó en la hora actual
+        // 4. BUCLE INTERNO: Peticiones de la hora actual
         for (let i = 1; i <= arribosHoy; i++) {
             contadorGlobal++;
-            // Obtenemos un número U_i para clasificar el tipo de petición (Monte Carlo)
             const uClasificacion = obtenerSiguienteU();
 
             let tipoTexto = "";
@@ -109,7 +102,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
             let calidadBadge = "";
 
             if (uClasificacion < 0.05) {
-                // 5% de probabilidad: Paquete corrupto / Error de red
                 totalError++;
                 errorHora++;
                 tipoTexto = `<span class="badge bg-danger">Error de Red</span>`;
@@ -117,7 +109,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
                 calidadBadge = `<span class="text-secondary">Descartada</span>`;
 
             } else if (uClasificacion < 0.65) {
-                // 60% de probabilidad (de 0.05 a 0.65): Consulta Simple -> V.A. Uniforme
                 totalSimple++;
                 simplesHora++;
                 const duracion = procUniforme(unifA, unifB);
@@ -132,7 +123,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
                 }
 
             } else {
-                // 35% restante (de 0.65 a 1.00): Transacción BD -> V.A. Normal
                 totalBd++;
                 bdHora++;
                 const duracion = Math.max(1, procNormal(normMedia, normDesvio));
@@ -147,7 +137,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
                 }
             }
 
-            // Insertar fila en la tabla detallada (igual a la hoja SIMULACION del Excel)
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>${contadorGlobal}</strong></td>
@@ -160,7 +149,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
             tbodySimulacion.appendChild(tr);
         }
 
-        // Insertar fila de resumen de esta hora
         const trHora = document.createElement("tr");
         trHora.innerHTML = `
             <td><strong>Hora ${hora}</strong></td>
@@ -177,8 +165,8 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
     const porcLentaBd = totalBd > 0 ? (lentaBd / totalBd) * 100 : 0;
     const porcError = contadorGlobal > 0 ? (totalError / contadorGlobal) * 100 : 0;
 
-    // Mostrar resultados en las tarjetas
-    document.getElementById("seccionResultados").style.display = "block";
+    // Mostrar resultados quitando la clase CSS .oculto
+    document.getElementById("seccionResultados").classList.remove("oculto");
     document.getElementById("resTotalPeticiones").textContent = contadorGlobal;
     document.getElementById("resDetalleHoras").textContent = `En ${horasSimular} horas simuladas`;
 
@@ -191,7 +179,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
     document.getElementById("resTotalError").textContent = totalError;
     document.getElementById("resPorcError").textContent = `${porcError.toFixed(2)}% del total`;
 
-    // Evaluar si se cumple la hipótesis en ambos tipos de servicio
     const alertaDiv = document.getElementById("alertaHipotesis");
     if (porcLentaSimple <= umbralSla && porcLentaBd <= umbralSla) {
         alertaDiv.className = "alert alert-success border-success mb-4 shadow-sm";
@@ -215,7 +202,6 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
         `;
     }
 
-    // Renderizar gráfico de barras comparativo
     renderizarGraficoComparativo(porcLentaSimple, porcLentaBd, umbralSla);
 });
 

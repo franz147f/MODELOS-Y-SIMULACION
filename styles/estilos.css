@@ -1,28 +1,58 @@
-body{
-    background-color:#000814;
+body {
+    background-color: #000814;
 }
-h1{
+
+h1, h2, h3, label {
     color: #f8f8f8;
 }
-h2{
-    color: #f8f8f8;
-}
-h3{
-    color: #f8f8f8;
-}
-p
-{
-    font-size:large;
+
+p {
+    font-size: large;
     font-weight: bolder;
     color: #f8f8f8;
 }
-label{
-    color: #f8f8f8;
-}
+
 footer {
     margin-top: 30px;
     padding: 15px 0;
     text-align: center;
     color: #ffffff;
     border-top: 1px solid #001d3d;
+}
+
+/* === NUEVOS ESTILOS (LABORATORIO 2 - SIMULADOR) === */
+
+.oculto {
+    display: none;
+}
+
+.contenedor-grafico-lab2 {
+    position: relative;
+    height: 220px;
+}
+
+.tabla-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.caja-distribucion {
+    padding: 12px;
+    border: 1px solid #495057;
+    border-radius: 6px;
+    background-color: #161a1d;
+}
+
+.caja-hipotesis {
+    background-color: rgba(13, 202, 240, 0.1);
+    border: 1px solid #0dcaf0;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.texto-descripcion {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #e0e0e0;
 }

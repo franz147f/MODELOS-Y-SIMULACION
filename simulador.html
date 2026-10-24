@@ -14,7 +14,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
                 <h1>Laboratorio 2: Simulación de Rendimiento de Servidor</h1>
-                <p class="text-secondary mb-0">Motor: Generador Congruencial Multiplicativo (Lab 1)</p>
+                <p class="text-secondary mb-0">Motor: Generador Congruencial Multiplicativo</p>
             </div>
             <a href="inicio.html" class="btn btn-outline-light">← Volver a Lab 1</a>
         </div>
@@ -25,13 +25,13 @@
                 Situación Problemática e Hipótesis (Toma de Decisiones)
             </div>
             <div class="card-body">
-                <p class="fs-6 fw-normal mb-2">
+                <p class="texto-descripcion mb-2">
                     Se evalúa un nuevo servidor que recibe peticiones por hora siguiendo una distribución de <strong>Poisson (λ)</strong>. 
                     El <strong>60%</strong> son <em>Consultas Simples</em> con tiempo de respuesta <strong>Uniforme [a, b]</strong> (Alta latencia si supera el umbral A), 
                     el <strong>35%</strong> son <em>Transacciones BD</em> con tiempo <strong>Normal (μ, σ)</strong> (Alta latencia si supera el umbral B), 
                     y el <strong>5%</strong> son paquetes corruptos (Error de red).
                 </p>
-                <div class="alert alert-secondary bg-opacity-25 border-info text-white mb-0 py-2">
+                <div class="caja-hipotesis mb-0">
                     <strong>Hipótesis (SLA):</strong> El servidor actual es apto si el porcentaje de peticiones con <em>Alta Latencia (Bajo Rendimiento)</em> 
                     <strong>no supera el 15%</strong> en ninguno de los dos modelos de consulta.
                 </div>
@@ -45,29 +45,29 @@
                 <div class="row g-3">
                     <!-- Parámetros del Generador (Lab 1) -->
                     <div class="col-md-4">
-                        <label class="form-label text-info small">Semilla (X₀) - Generador Multiplicativo:</label>
+                        <label for="semilla" class="form-label text-info small">Semilla (X₀) - Generador Multiplicativo:</label>
                         <input type="number" id="semilla" class="form-control" value="7" min="1" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label text-info small">Multiplicador (a):</label>
+                        <label for="multiplicador" class="form-label text-info small">Multiplicador (a):</label>
                         <input type="number" id="multiplicador" class="form-control" value="16807" min="1" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label text-info small">Módulo (m):</label>
+                        <label for="modulo" class="form-label text-info small">Módulo (m):</label>
                         <input type="number" id="modulo" class="form-control" value="2147483647" min="2" required>
                     </div>
 
                     <!-- Parámetros de Poisson y Tiempo -->
                     <div class="col-md-3">
-                        <label class="form-label small">Horas a simular (Continuos):</label>
+                        <label for="horas" class="form-label small">Horas a simular (Continuos):</label>
                         <input type="number" id="horas" class="form-control" value="5" min="1" max="100" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small">Promedio Peticiones/Hora (Poisson λ):</label>
+                        <label for="lambda" class="form-label small">Promedio Peticiones/Hora (Poisson λ):</label>
                         <input type="number" id="lambda" class="form-control" value="30" min="1" max="200" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small">Umbral Máx. Tolerado SLA (%):</label>
+                        <label for="umbralSla" class="form-label small">Umbral Máx. Tolerado SLA (%):</label>
                         <input type="number" id="umbralSla" class="form-control" value="15" min="1" max="100" required>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
@@ -76,19 +76,19 @@
 
                     <!-- Parámetros de Uniforme y Normal -->
                     <div class="col-md-6">
-                        <div class="p-2 border border-secondary rounded">
+                        <div class="caja-distribucion">
                             <span class="badge bg-info text-dark mb-2">V.A. Uniforme (Consulta Simple - 60%)</span>
                             <div class="row g-2">
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Mínimo a (ms):</label>
+                                    <label for="unifA" class="form-label small mb-0">Mínimo a (ms):</label>
                                     <input type="number" id="unifA" class="form-control form-control-sm" value="50" required>
                                 </div>
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Máximo b (ms):</label>
+                                    <label for="unifB" class="form-label small mb-0">Máximo b (ms):</label>
                                     <input type="number" id="unifB" class="form-control form-control-sm" value="210" required>
                                 </div>
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Límite Lenta (ms):</label>
+                                    <label for="limiteSimple" class="form-label small mb-0">Límite Lenta (ms):</label>
                                     <input type="number" id="limiteSimple" class="form-control form-control-sm" value="180" required>
                                 </div>
                             </div>
@@ -96,19 +96,19 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="p-2 border border-secondary rounded">
+                        <div class="caja-distribucion">
                             <span class="badge bg-warning text-dark mb-2">V.A. Normal (Transacción BD - 35%)</span>
                             <div class="row g-2">
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Media μ (ms):</label>
+                                    <label for="normMedia" class="form-label small mb-0">Media μ (ms):</label>
                                     <input type="number" id="normMedia" class="form-control form-control-sm" value="350" required>
                                 </div>
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Desvío σ (ms):</label>
+                                    <label for="normDesvio" class="form-label small mb-0">Desvío σ (ms):</label>
                                     <input type="number" id="normDesvio" class="form-control form-control-sm" value="60" required>
                                 </div>
                                 <div class="col-4">
-                                    <label class="form-label small mb-0">Límite Lenta (ms):</label>
+                                    <label for="limiteBd" class="form-label small mb-0">Límite Lenta (ms):</label>
                                     <input type="number" id="limiteBd" class="form-control form-control-sm" value="420" required>
                                 </div>
                             </div>
@@ -118,8 +118,8 @@
             </form>
         </div>
 
-        <!-- Sección de Resultados y Decisión (Oculta hasta simular) -->
-        <div id="seccionResultados" style="display: none;">
+        <!-- Sección de Resultados y Decisión (Usa la clase .oculto de estilos.css) -->
+        <div id="seccionResultados" class="oculto">
             <!-- Veredicto de la Hipótesis -->
             <div id="alertaHipotesis" class="alert mb-4 shadow-sm"></div>
 
@@ -192,7 +192,7 @@
                             Comparación de Latencia vs Límite de Hipótesis
                         </div>
                         <div class="card-body">
-                            <div style="position: relative; height: 220px;">
+                            <div class="contenedor-grafico-lab2">
                                 <canvas id="graficoComparativo"></canvas>
                             </div>
                         </div>
@@ -200,9 +200,9 @@
                 </div>
             </div>
 
-            <!-- Tabla Detallada de Simulación (Como la hoja SIMULACION del Excel) -->
+            <!-- Tabla Detallada de Simulación (Usa la clase .tabla-scroll de estilos.css) -->
             <h3 class="mb-3">Tabla de Simulación Detallada (Petición por Petición)</h3>
-            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <div class="table-responsive tabla-scroll">
                 <table class="table table-dark table-striped table-hover text-center align-middle">
                     <thead class="sticky-top">
                         <tr>
@@ -221,7 +221,7 @@
     </div>
 
     <footer> 
-        Bordon Guanco Joel MU:2010- | Franco Sedan Caniza MU:1930
+        Bordon Guanco Joel MU:2010 | Franco Sedan Caniza MU:1930
     </footer>
 
     <script src="JS/simulacionServidor.js"></script>
