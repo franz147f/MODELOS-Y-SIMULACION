@@ -4,9 +4,8 @@ let aGlobal = 16807;
 let mGlobal = 2147483647;
 let graficoInstancia = null;
 
-// =========================================================================
 // 1. MOTOR GENERADOR PSEUDOALEATORIO (Reutilizado del Laboratorio 1)
-// =========================================================================
+
 function obtenerSiguienteU() {
     const producto = aGlobal * xActual;
     const xSiguiente = producto % mGlobal;
@@ -15,9 +14,8 @@ function obtenerSiguienteU() {
     return u_n;
 }
 
-// =========================================================================
 // 2. SUBRUTINAS DE DISTRIBUCIONES TEÓRICAS DE PROBABILIDAD (Unidad 3)
-// =========================================================================
+
 
 // A. Distribución de Poisson (Eventos por hora)
 function procPoisson(lambda) {
