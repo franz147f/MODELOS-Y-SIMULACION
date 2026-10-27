@@ -9,7 +9,7 @@ Repositorio oficial para los trabajos y proyectos de la cátedra de **Modelos y 
 
 | Apellido y Nombre | Matrícula Universitaria (MU) |
 | :--- | :---: |
-| **Sedan Caniza, Joel** | `01930` |
+| **Sedan Caniza, Franco** | `01930` |
 | **Bordon Guanco, Joel** | `2010` |
 
 ## 👩‍🏫 Equipo Docente
