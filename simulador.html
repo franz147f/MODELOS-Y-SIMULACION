@@ -45,8 +45,14 @@
                 <div class="row g-3">
                     <!-- Parámetros del Generador (Lab 1) -->
                     <div class="col-md-4">
+                        <label for="modoSemilla" class="form-label text-info small">Modo de semilla:</label>
+                        <select id="modoSemilla" class="form-select mb-2">
+                            <option value="fija">Fija (resultados reproducibles)</option>
+                            <option value="aleatoria">Aleatoria (nueva en cada ejecución)</option>
+                        </select>
                         <label for="semilla" class="form-label text-info small">Semilla (X₀) - Generador Multiplicativo:</label>
                         <input type="number" id="semilla" class="form-control" value="7" min="1" required>
+                        <small class="text-secondary">En modo aleatorio se genera automáticamente una semilla nueva.</small>
                     </div>
                     <div class="col-md-4">
                         <label for="multiplicador" class="form-label text-info small">Multiplicador (a):</label>
@@ -120,6 +126,7 @@
 
         <!-- Sección de Resultados y Decisión (Usa la clase .oculto de estilos.css) -->
         <div id="seccionResultados" class="oculto">
+            <div class="alert alert-info mb-3" id="semillaUtilizada"></div>
             <!-- Veredicto de la Hipótesis -->
             <div id="alertaHipotesis" class="alert mb-4 shadow-sm"></div>
 
