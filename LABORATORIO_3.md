@@ -44,11 +44,11 @@ El Laboratorio 2 modela eventos individuales: peticiones por hora (Poisson), tip
 
 Abrí **[modelos/servidor_lab3.mdl](modelos/servidor_lab3.mdl)** con Vensim. El archivo contiene ecuaciones, unidades, condiciones iniciales, parámetros de simulación y un esquema básico de niveles y flujos. El SVG ofrece una versión explicativa más completa de conectores auxiliares. La reproducción visual exacta del SVG dentro de Vensim puede requerir organizar manualmente el sketch. No se verificó este archivo en una instalación local de Vensim.
 
-En Vensim, para comparar los escenarios se cambian las constantes \`Activar pico\` y \`Activar ampliacion\`: **(0,0) base**, **(1,0) pico sin ampliación**, **(1,1) pico con ampliación**. Se establece \`TIME STEP = 0.05\` h, \`FINAL TIME = 48\` h y método **Euler**.
+En Vensim, para comparar los escenarios se cambian las constantes `Activar pico` y `Activar ampliacion`: **(0,0) base**, **(1,0) pico sin ampliación**, **(1,1) pico con ampliación**. Se establece `TIME STEP = 0.05` h, `FINAL TIME = 48` h y método **Euler**.
 
 ## f. Formulación de ecuaciones
 
-\`\`\`text
+```text
 Q(t + dt) = Q(t) + [A(t) - S(t) - D(t)] * dt       Q(0) = 0
 C(t + dt) = C(t) + [I(t) - O(t)] * dt             C(0) = 36
 
@@ -62,13 +62,13 @@ I = min(max_ampliacion, ganancia_inversion * max(0,P-1)) si se activa, sino 0
 O = C * tasa_obsolescencia
 
 % abandono = 100 * abandonadas_acumuladas / recibidas_acumuladas
-\`\`\`
+```
 
 Las salidas están limitadas por la disponibilidad de solicitudes; el modelo en navegador aplica además un mínimo numérico de cero a la cola y uno a la capacidad. Para los tres escenarios publicados, esos mínimos no alteran las trayectorias. La identidad de conservación se comprueba con:
 
-\`\`\`text
+```text
 Recibidas = Atendidas + Abandonadas + Pendientes finales
-\`\`\`
+```
 
 Parámetros de ejemplo: demanda base 30 peticiones/h, capacidad inicial 36 peticiones/h, factor de pico 2,2 (66 peticiones/h entre las horas 12 y 30), horizonte de cola 4 h, tiempo de abandono 4 h, degradación 0,08, obsolescencia 0,002/h, ganancia de inversión 10 peticiones/h², máximo de ampliación 8 peticiones/h².
 
@@ -89,17 +89,17 @@ El pico sin ampliación eleva la cola máxima a aproximadamente **144,1** solici
 La corrida base tiene abandonos nulos, pero muestra desgaste gradual de capacidad. La inversión no elimina totalmente el pico ni sus consecuencias: responde a la presión con la velocidad de ampliación definida. **No es una predicción de un servidor real.** Antes de una decisión operativa se debe calibrar el modelo, contrastarlo con registros y verificar sensibilidad a parámetros, especialmente el tiempo de abandono, la capacidad efectiva y los costos de expansión.
 
 ### Referencias técnicas
-- Vensim, función \`INTEG\`: https://vensim.com/documentation/fn_integ.html
-- Vensim, \`IF THEN ELSE\`: https://vensim.com/documentation/fn_if_then_else.html
-- Vensim, formato de sketches \`.mdl\`: https://www.vensim.com/documentation/ref_sketch_format.html
+- Vensim, función `INTEG`: https://vensim.com/documentation/fn_integ.html
+- Vensim, `IF THEN ELSE`: https://vensim.com/documentation/fn_if_then_else.html
+- Vensim, formato de sketches `.mdl`: https://www.vensim.com/documentation/ref_sketch_format.html
 
 ### Archivos incluidos
-- \`laboratorio3.html\` — aplicación y gráficos.
-- \`JS/laboratorio3_modelo.js\` — motor de simulación independiente.
-- \`JS/laboratorio3_app.js\` — interfaz y gráficos.
-- \`styles/laboratorio3.css\` — diseño responsive.
-- \`diagramas/causal_lab3.svg\` — bucles de retroalimentación.
-- \`diagramas/forrester_lab3.svg\` — niveles y flujos.
-- \`modelos/servidor_lab3.mdl\` — modelo de ecuaciones para Vensim.
+- `laboratorio3.html` — aplicación y gráficos.
+- `JS/laboratorio3_modelo.js` — motor de simulación independiente.
+- `JS/laboratorio3_app.js` — interfaz y gráficos.
+- `styles/laboratorio3.css` — diseño responsive.
+- `diagramas/causal_lab3.svg` — bucles de retroalimentación.
+- `diagramas/forrester_lab3.svg` — niveles y flujos.
+- `modelos/servidor_lab3.mdl` — modelo de ecuaciones para Vensim.
 
 El PDF de consigna **no se subió**.
