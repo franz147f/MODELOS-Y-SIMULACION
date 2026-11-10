@@ -37,3 +37,15 @@ Para descargar este proyecto en tu entorno local y empezar a trabajar con el có
 ```bash
 git clone https://github.com/franz147f/MODELOS-Y-SIMULACION.git
 ```
+
+
+## Laboratorio 3 — Proyecto de simulación continua
+
+La rama **Laboratorio-3** incluye una nueva aplicación interactiva con diagramas, ecuaciones y tres escenarios comparables (modelo de Dinámica de Sistemas basado en el servidor del Laboratorio 2).
+
+- [Abrir el simulador continuo](laboratorio3.html)
+- [Leer el desarrollo de la consigna a–h](LABORATORIO_3.md)
+- [Modelo para Vensim](modelos/servidor_lab3.mdl)
+- [Diagrama causal](diagramas/causal_lab3.svg) · [Diagrama de Forrester](diagramas/forrester_lab3.svg)
+
+El documento de consigna original no está incluido en el repositorio.

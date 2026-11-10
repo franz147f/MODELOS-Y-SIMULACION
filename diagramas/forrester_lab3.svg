@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="710" viewBox="0 0 1250 710" role="img" aria-label="Diagrama de Forrester, dos stocks y cinco flujos de arribos, atenciones, abandonos, ampliación y obsolescencia">
+<defs><marker id="az" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#0369a1"/></marker><marker id="gris" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#64748b"/></marker><style>text{font-family:Arial,sans-serif;fill:#163453}.titulo{font-size:27px;font-weight:800}.mini{font-size:16px;fill:#57728c}.stock{fill:#dceefe;stroke:#1d5f9b;stroke-width:3}.tstock{font-size:22px;font-weight:800}.tflow{font-size:18px;font-weight:750}.pipe{fill:none;stroke:#0369a1;stroke-width:5;marker-end:url(#az)}.conn{fill:none;stroke:#64748b;stroke-width:2;stroke-dasharray:7 6;marker-end:url(#gris)}.valve{fill:#f8fafc;stroke:#0369a1;stroke-width:3}.cloud{fill:none;stroke:#64748b;stroke-width:3}</style></defs>
+<rect width="1250" height="710" fill="#ffffff" rx="20"/>
+<text x="44" y="49" class="titulo">Diagrama de Forrester | Niveles, flujos y auxiliares</text>
+<text x="44" y="78" class="mini">Stocks = rectángulos · Flujos = tuberías con válvulas · Auxiliares = óvalos y conectores punteados</text>
+<!-- STOCKS -->
+<rect class="stock" x="480" y="198" width="258" height="90" rx="6"/><text x="609" y="235" class="tstock" text-anchor="middle">Peticiones</text><text x="609" y="260" class="tstock" text-anchor="middle">pendientes</text>
+<text x="609" y="306" class="mini" text-anchor="middle">peticiones</text>
+<rect class="stock" x="538" y="480" width="255" height="93" rx="6"/><text x="666" y="519" class="tstock" text-anchor="middle">Capacidad</text><text x="666" y="545" class="tstock" text-anchor="middle">operativa</text>
+<text x="665" y="594" class="mini" text-anchor="middle">peticiones / hora</text>
+<!-- NUBES -->
+<g class="cloud"><path d="M68 248 c-18 -29 15 -42 28 -28 c18 -31 58 -12 49 9 c27 -7 36 30 9 39 h-76 z"/>
+<path d="M1124 195 c-17 -28 15 -42 27 -28 c16 -30 57 -10 47 9 c27 -8 35 31 7 39 h-79 z"/>
+<path d="M1125 365 c-18 -27 14 -43 28 -26 c14 -27 55 -13 48 7 c25 -7 33 30 6 39 h-80 z"/>
+<path d="M68 501 c-18 -28 14 -43 27 -28 c16 -28 56 -11 48 9 c27 -8 36 31 8 39 h-79 z"/>
+<path d="M1122 507 c-18 -28 15 -42 28 -28 c15 -29 56 -11 48 10 c27 -8 35 29 8 38 h-79 z"/></g>
+<!-- FLUJOS -->
+<path class="pipe" d="M157 245 L474 245"/><circle class="valve" cx="318" cy="245" r="14"/><path d="M304 233 L332 257 M332 233 L304 257" stroke="#0369a1" stroke-width="2"/>
+<text class="tflow" x="318" y="215" text-anchor="middle">Arribos</text>
+<path class="pipe" d="M742 220 L1124 206"/><circle class="valve" cx="921" cy="213" r="14"/><path d="M908 199 L934 226 M934 199 L908 226" stroke="#0369a1" stroke-width="2"/>
+<text class="tflow" x="926" y="175" text-anchor="middle">Atenciones</text>
+<path class="pipe" d="M743 270 L841 270 L843 371 L1123 371"/><circle class="valve" cx="964" cy="371" r="14"/><path d="M950 357 L978 385 M978 357 L950 385" stroke="#0369a1" stroke-width="2"/>
+<text class="tflow" x="965" y="344" text-anchor="middle">Abandonos</text>
+<path class="pipe" d="M158 510 L535 520"/><circle class="valve" cx="340" cy="515" r="14"/><path d="M326 501 L354 529 M354 501 L326 529" stroke="#0369a1" stroke-width="2"/>
+<text class="tflow" x="340" y="481" text-anchor="middle">Ampliación</text>
+<path class="pipe" d="M798 526 L1120 526"/><circle class="valve" cx="961" cy="526" r="14"/><path d="M947 512 L975 540 M975 512 L947 540" stroke="#0369a1" stroke-width="2"/>
+<text class="tflow" x="966" y="493" text-anchor="middle">Obsolescencia</text>
+<!-- AUXILIARES -->
+<g fill="#fef3c7" stroke="#cc8a24" stroke-width="2">
+<ellipse cx="274" cy="118" rx="99" ry="33"/><ellipse cx="610" cy="121" rx="103" ry="33"/><ellipse cx="973" cy="115" rx="100" ry="33"/><ellipse cx="1000" cy="648" rx="158" ry="30"/>
+</g>
+<text class="tflow" x="274" y="123" text-anchor="middle">Demanda</text><text class="tflow" x="610" y="126" text-anchor="middle">Presión</text>
+<text class="tflow" x="973" y="120" text-anchor="middle">Eficiencia</text>
+<text class="tflow" x="1000" y="655" text-anchor="middle">Tasa de obsolescencia</text>
+<g class="conn">
+<path d="M274 152 L318 230"/><path d="M681 135 L905 201"/><path d="M973 148 L931 197"/>
+<path d="M604 151 C520 273 410 340 339 499"/><path d="M602 286 L608 102"/>
+<path d="M795 525 C855 483 887 208 868 165"/><path d="M1000 618 L964 543"/>
+</g>
+<text x="48" y="678" class="mini">Representación conceptual del mismo conjunto de ecuaciones provisto en el archivo .mdl de Vensim.</text>
+</svg>

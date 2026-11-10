@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-label="Diagrama causal del servidor: bucles R1 saturación, B1 ampliación y B2 abandono.">
+<defs><marker id="flecha" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 z" fill="#164d77"/></marker><style>
+text{font-family:Arial,sans-serif;fill:#153451}.nodo{fill:#e7f3fe;stroke:#2869a6;stroke-width:2}.flecha{fill:none;stroke:#164d77;stroke-width:2.5;marker-end:url(#flecha)}.signo{font-size:22px;font-weight:800;fill:#15803d}.menos{fill:#b91c1c}.titulo{font-size:28px;font-weight:800}.sub{font-size:15px;fill:#536d82}.ntext{font-size:19px;font-weight:700}.loop{font-size:16px;font-weight:750}
+</style></defs>
+<rect width="1200" height="680" rx="20" fill="#ffffff"/>
+<text x="50" y="45" class="titulo">Diagrama causal | Rendimiento de un servidor</text>
+<text x="50" y="72" class="sub">Polaridad: (+) cambio en el mismo sentido; (−) cambio en sentido contrario</text>
+<g class="flecha">
+<path d="M272 139 Q311 138 350 160"/><path d="M532 172 Q584 154 630 158"/>
+<path d="M797 150 L910 150"/><path d="M1008 184 C1055 240 1054 280 1015 316"/>
+<path d="M900 340 C780 288 672 232 516 193"/>
+<path d="M380 204 C326 254 287 292 248 330"/><path d="M132 325 C95 216 177 149 347 166"/>
+<path d="M701 197 L699 307"/><path d="M659 393 L527 501"/>
+<path d="M551 530 C723 515 864 457 934 393"/>
+<path d="M433 497 C439 320 532 212 639 176"/>
+</g>
+<g>
+<text x="300" y="119" class="signo">+</text><text x="572" y="148" class="signo">+</text>
+<text x="838" y="134" class="signo menos">−</text><text x="1054" y="268" class="signo">+</text>
+<text x="742" y="273" class="signo menos">−</text><text x="313" y="273" class="signo">+</text><text x="201" y="156" class="signo menos">−</text>
+<text x="716" y="262" class="signo">+</text><text x="587" y="461" class="signo">+</text><text x="778" y="487" class="signo">+</text><text x="491" y="313" class="signo menos">−</text>
+</g>
+<rect class="nodo" x="80" y="107" width="192" height="61" rx="28"/><text class="ntext" x="176" y="145" text-anchor="middle">Arribos</text>
+<rect class="nodo" x="350" y="145" width="182" height="60" rx="28"/><text class="ntext" x="441" y="169" text-anchor="middle">Peticiones</text><text class="ntext" x="441" y="190" text-anchor="middle">pendientes</text>
+<rect class="nodo" x="630" y="124" width="167" height="73" rx="28"/><text class="ntext" x="714" y="166" text-anchor="middle">Presión</text>
+<rect class="nodo" x="910" y="122" width="191" height="62" rx="28"/><text class="ntext" x="1005" y="160" text-anchor="middle">Eficiencia</text>
+<rect class="nodo" x="900" y="316" width="205" height="74" rx="28"/><text class="ntext" x="1002" y="360" text-anchor="middle">Atenciones</text>
+<rect class="nodo" x="592" y="307" width="213" height="86" rx="28"/><text class="ntext" x="699" y="358" text-anchor="middle">Ampliación</text>
+<rect class="nodo" x="347" y="497" width="204" height="69" rx="28"/><text class="ntext" x="449" y="525" text-anchor="middle">Capacidad</text><text class="ntext" x="449" y="547" text-anchor="middle">operativa</text>
+<rect class="nodo" x="84" y="327" width="181" height="66" rx="28"/><text class="ntext" x="174" y="367" text-anchor="middle">Abandonos</text>
+<rect x="56" y="596" width="1089" height="57" rx="10" fill="#edf5fc"/>
+<text x="81" y="621" class="loop" fill="#b45309">R1: saturación</text><text x="81" y="643" class="sub">cola → presión → eficiencia → atenciones → cola</text>
+<text x="458" y="621" class="loop" fill="#0369a1">B1: inversión</text><text x="458" y="643" class="sub">presión → ampliación → capacidad → atenciones → cola</text>
+<text x="907" y="621" class="loop" fill="#0369a1">B2: abandono</text><text x="907" y="643" class="sub">cola → abandonos → cola</text>
+</svg>
