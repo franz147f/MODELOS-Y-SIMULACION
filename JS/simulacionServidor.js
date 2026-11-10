@@ -46,6 +46,16 @@ function procNormal(media, desvio) {
     return desvio * (sum - 6.0) + media;
 }
 
+// Actualizar el campo de semilla manual según el modo elegido.
+const selectorModoSemilla = document.getElementById("modoSemilla");
+const campoSemilla = document.getElementById("semilla");
+selectorModoSemilla.addEventListener("change", () => {
+    const esAleatoria = selectorModoSemilla.value === "aleatoria";
+    campoSemilla.disabled = esAleatoria;
+    campoSemilla.required = !esAleatoria;
+});
+selectorModoSemilla.dispatchEvent(new Event("change"));
+
 // =========================================================================
 // 3. LÓGICA PRINCIPAL DEL SIMULADOR
 // =========================================================================
@@ -53,9 +63,27 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
     e.preventDefault();
 
     // 1. Capturar parámetros ingresados por el usuario
-    xActual = parseInt(document.getElementById("semilla").value, 10);
     aGlobal = parseInt(document.getElementById("multiplicador").value, 10);
     mGlobal = parseInt(document.getElementById("modulo").value, 10);
+
+    const modoSemilla = document.getElementById("modoSemilla").value;
+    const semillaManual = parseInt(document.getElementById("semilla").value, 10);
+    if (!Number.isSafeInteger(mGlobal) || mGlobal <= 1 ||
+        !Number.isSafeInteger(aGlobal) || aGlobal <= 0) {
+        alert("El módulo debe ser mayor que 1 y el multiplicador debe ser positivo.");
+        return;
+    }
+    if (modoSemilla === "aleatoria") {
+        // Una semilla nueva en el intervalo [1, m - 1] en cada ejecución.
+        xActual = Math.floor(Math.random() * (mGlobal - 1)) + 1;
+    } else {
+        if (!Number.isSafeInteger(semillaManual) || semillaManual <= 0 || semillaManual >= mGlobal) {
+            alert("La semilla fija debe ser un entero entre 1 y m - 1.");
+            return;
+        }
+        xActual = semillaManual;
+    }
+    const semillaInicial = xActual;
 
     const horasSimular = parseInt(document.getElementById("horas").value, 10);
     const lambdaPeticiones = parseFloat(document.getElementById("lambda").value);
@@ -165,6 +193,8 @@ document.getElementById("formSimulacion").addEventListener("submit", function (e
 
     // Mostrar resultados quitando la clase CSS .oculto
     document.getElementById("seccionResultados").classList.remove("oculto");
+    document.getElementById("semillaUtilizada").textContent =
+        `Modo: ${modoSemilla === "fija" ? "semilla fija" : "semilla aleatoria"} · Semilla utilizada (X₀): ${semillaInicial}`;
     document.getElementById("resTotalPeticiones").textContent = contadorGlobal;
     document.getElementById("resDetalleHoras").textContent = `En ${horasSimular} horas simuladas`;
 
