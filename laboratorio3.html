@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Laboratorio 3 | Dinámica de Sistemas — Servidor</title>
+    <meta name="description" content="Proyecto de simulación continua: niveles, flujos, diagramas, ecuaciones y escenarios de rendimiento de un servidor.">
+    <link rel="stylesheet" href="styles/laboratorio3.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script defer src="JS/laboratorio3_modelo.js"></script>
+    <script defer src="JS/laboratorio3_app.js"></script>
+</head>
+<body>
+    <div class="marco">
+        <header class="encabezado">
+            <div class="marca">UNCa <span>/ Modelos y Simulación</span></div>
+            <nav><a href="simulador.html">Laboratorio 2</a><a href="inicio.html">Laboratorio 1</a><a href="modelos/servidor_lab3.mdl" download>Modelo Vensim (.mdl)</a></nav>
+        </header>
+        <main>
+            <section class="hero">
+                <div><p class="sobrelinea">LABORATORIO 03 · PROYECTO DE SIMULACIÓN</p>
+                <h1>De los eventos a la <em>Dinámica de Sistemas</em></h1>
+                <p class="introduccion">Modelamos cómo la demanda, la cola de solicitudes y la capacidad de un servidor evolucionan y se retroalimentan. Comparamos políticas de inversión ante un pico de tráfico.</p>
+                <div class="chips"><span>Stocks y flujos</span><span>Bucles R / B</span><span>Euler</span><span>Escenarios hipotéticos</span></div></div>
+                <aside class="caja-enfoque"><span class="etiqueta">Pregunta central</span><p>¿Una ampliación de capacidad permite reducir el abandono de solicitudes frente a un pico de demanda?</p><small>Hipótesis contrastada mediante simulación, no mediante registros reales.</small></aside>
+            </section>
+
+            <section class="seccion" id="problema"><div class="sectionhead"><span>01 · PLANTEAMIENTO</span><h2>Problema, hipótesis y variables</h2></div>
+                <div class="tarjetas tres">
+                    <article class="panel"><h3>Problema sistémico</h3><p>Cuando los arribos superan las atenciones, crece la cola, aumenta la presión y pueden producirse abandonos. La capacidad instalada responde con retraso a decisiones de ampliación.</p></article>
+                    <article class="panel"><h3>Hipótesis</h3><p>Una política de ampliación activada por la presión del sistema reduce el porcentaje acumulado de solicitudes abandonadas, comparada con no invertir durante un pico.</p></article>
+                    <article class="panel"><h3>Criterio SLA</h3><p>Evaluamos como aceptable un porcentaje acumulado de abandono no superior al <strong>15%</strong> (valor editable). Es un indicador propuesto para este modelo continuo; no equivale directamente a la latencia del Laboratorio 2.</p></article>
+                </div>
+                <div class="tarjetas tres variables">
+                    <article class="panel"><span class="etiqueta">NIVELES / STOCKS</span><h3>Acumulaciones</h3><p>Peticiones pendientes (solicitudes) y capacidad operativa (solicitudes/hora).</p></article>
+                    <article class="panel"><span class="etiqueta">FLUJOS</span><h3>Movimientos</h3><p>Arribos, atenciones, abandonos, ampliación y obsolescencia.</p></article>
+                    <article class="panel"><span class="etiqueta">AUXILIARES</span><h3>Relaciones</h3><p>Presión, eficiencia, capacidad efectiva, demanda y porcentaje acumulado de abandono.</p></article>
+                </div>
+            </section>
+
+            <section class="seccion" id="diagramas"><div class="sectionhead"><span>02 · ESTRUCTURA</span><h2>Diagramas del sistema</h2></div>
+                <article class="panel diagrama"><div class="diagrama-title"><div><h3>Diagrama causal</h3><p>R1: saturación · B1: ampliación · B2: abandono</p></div><a href="diagramas/causal_lab3.svg" target="_blank" rel="noopener">Abrir SVG</a></div><img src="diagramas/causal_lab3.svg" alt="Diagrama causal con lazos de saturación, ampliación y abandono."></article>
+                <article class="panel diagrama"><div class="diagrama-title"><div><h3>Diagrama de Forrester</h3><p>Dos stocks y cinco flujos. Disponible también en formato de ecuaciones para Vensim.</p></div><a href="modelos/servidor_lab3.mdl" download>Modelo .mdl</a></div><img src="diagramas/forrester_lab3.svg" alt="Diagrama de niveles y flujos, con una cola de solicitudes y capacidad operativa."></article>
+            </section>
+
+            <section class="seccion" id="ecuaciones"><div class="sectionhead"><span>03 · FORMULACIÓN</span><h2>Ecuaciones y supuestos</h2></div>
+                <div class="tarjetas dos">
+                    <article class="panel"><h3>Stock de peticiones pendientes</h3><p class="formula">Q(t + Δt) = máx(0, Q(t) + (A − S − D) · Δt)</p><p>A = arribos; S = atenciones; D = abandonos. Condición inicial: Q(0) = 0.</p></article>
+                    <article class="panel"><h3>Stock de capacidad</h3><p class="formula">C(t + Δt) = máx(1, C(t) + (I − O) · Δt)</p><p>I = ampliación; O = obsolescencia. C(0) = 36 solicitudes/hora.</p></article>
+                </div>
+                <p class="nota">Método: integración numérica Euler, paso de 0,05 horas. La demanda se representa como una tasa continua por tramos; no se emplean números aleatorios porque aquí se comparan trayectorias del modelo continuo. Parámetros y fórmulas completas en el archivo <a href="LABORATORIO_3.md">de documentación</a>.</p>
+            </section>
+
+            <section class="seccion" id="experimentos"><div class="sectionhead"><span>04 · EXPERIMENTACIÓN</span><h2>Probá tres escenarios</h2></div>
+                <form id="formModelo" class="panel formulario">
+                    <div class="form-grid">
+                        <label>Duración (horas)<input id="horas" type="number" min="2" max="240" step="1" value="48" required></label>
+                        <label>Demanda base (pet./h)<input id="demandaBase" type="number" min="0" max="1000" step="1" value="30" required></label>
+                        <label>Capacidad inicial (pet./h)<input id="capacidadInicial" type="number" min="1" max="2000" step="1" value="36" required></label>
+                        <label>Factor del pico<input id="factorPico" type="number" min="1" max="10" step="0.1" value="2.2" required></label>
+                        <label>Comienzo del pico (h)<input id="inicioPico" type="number" min="0" max="239" step="0.5" value="12" required></label>
+                        <label>Fin del pico (h)<input id="finPico" type="number" min="1" max="240" step="0.5" value="30" required></label>
+                        <label>Tiempo de abandono (h)<input id="tiempoAbandono" type="number" min="0.1" max="48" step="0.1" value="4" required></label>
+                        <label>Ganancia de inversión<input id="gananciaInversion" type="number" min="0" max="50" step="0.5" value="10" required></label>
+                        <label>Máxima ampliación (pet./h²)<input id="maxAmpliacion" type="number" min="0" max="100" step="1" value="8" required></label>
+                        <label>Máximo abandono SLA (%)<input id="slaMaximo" type="number" min="0" max="100" step="0.5" value="15" required></label>
+                    </div>
+                    <div class="acciones"><button type="submit">Ejecutar y comparar escenarios</button><p>Base: sin pico · Pico: sin ampliar · Ampliación: con el mismo pico y política adaptativa</p></div>
+                    <p class="error" id="errorModelo" hidden></p>
+                </form>
+            </section>
+
+            <section class="seccion" id="resultados" hidden><div class="sectionhead"><span>05 · ANÁLISIS</span><h2>Resultados comparativos</h2></div>
+                <div class="tarjetas cuatro">
+                    <article class="kpi"><span>Cola máxima en pico</span><strong id="kpiPico">—</strong></article>
+                    <article class="kpi"><span>Abandono sin ampliación</span><strong id="kpiPerdidas">—</strong></article>
+                    <article class="kpi"><span>Abandono con ampliación</span><strong id="kpiMejora">—</strong></article>
+                    <article class="kpi"><span>Umbral del SLA</span><strong id="kpiSla">—</strong></article>
+                </div>
+                <div class="tarjetas dos"><article class="panel chart"><h3>Solicitudes pendientes</h3><div class="plot"><canvas id="grafCola"></canvas></div></article>
+                    <article class="panel chart"><h3>Capacidad operativa</h3><div class="plot"><canvas id="grafCapacidad"></canvas></div></article></div>
+                <article class="panel chart"><h3>Porcentaje acumulado de abandonos</h3><div class="plot"><canvas id="grafPerdidas"></canvas></div></article>
+                <article class="panel tabla"><h3>Comparación final</h3><div class="scroll"><table><thead><tr><th>Escenario</th><th>Recibidas</th><th>Atendidas</th><th>Abandonadas</th><th>Cola máx.</th><th>Capacidad final</th><th>Abandono</th><th>SLA</th></tr></thead><tbody id="tablaExperimentos"></tbody></table></div></article>
+                <article class="panel conclusion"><h3>Interpretación de la hipótesis</h3><p id="conclusion"></p></article>
+            </section>
+            <section class="seccion cierre"><div class="sectionhead"><span>06 · CONCLUSIONES</span><h2>Alcance y próximos pasos</h2></div><p>El modelo representa bucles de congestión, abandono y expansión para contrastar decisiones. Las tasas y parámetros son <strong>supuestos académicos</strong>, no estimaciones basadas en telemetría; para validar un servidor real hacen falta datos de demanda, atención, abandono y capacidad. El modelo de Vensim permite repetir los experimentos modificando sus constantes.</p><a class="boton-secundario" href="modelos/servidor_lab3.mdl" download>Descargar ecuaciones Vensim</a></section>
+        </main>
+        <footer>Modelos y Simulación · Universidad Nacional de Catamarca · Franco Sedan Caniza y Joel Bordon Guanco</footer>
+    </div>
+</body>
+</html>
