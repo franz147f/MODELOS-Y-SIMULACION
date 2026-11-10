@@ -49,3 +49,7 @@ La rama **Laboratorio-3** incluye una nueva aplicación interactiva con diagrama
 - [Diagrama causal](diagramas/causal_lab3.svg) · [Diagrama de Forrester](diagramas/forrester_lab3.svg)
 
 El documento de consigna original no está incluido en el repositorio.
+
+### Presentación en Canva
+
+- [Editar presentación del Laboratorio 3 (11 diapositivas)](https://www.canva.com/d/btXe7F9Zt8wmYvU)

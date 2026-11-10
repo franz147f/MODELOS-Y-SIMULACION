@@ -103,3 +103,7 @@ La corrida base tiene abandonos nulos, pero muestra desgaste gradual de capacida
 - `modelos/servidor_lab3.mdl` — modelo de ecuaciones para Vensim.
 
 El PDF de consigna **no se subió**.
+
+### Presentación visual en Canva
+
+- [Presentación editable: Laboratorio 3 — Dinámica de Sistemas](https://www.canva.com/d/btXe7F9Zt8wmYvU) (11 diapositivas, diagramas y gráficos del modelo).
