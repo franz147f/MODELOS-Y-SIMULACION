@@ -18,19 +18,22 @@ Repositorio oficial para los trabajos y proyectos de la cátedra de **Modelos y 
 * ➧ **Lic. Marcela Molina**
 * ➧ **Ing. María Belén Leguizamón**
 
-## 🚀 Sobre el Repositorio
+## 🚀 Estructura del Proyecto por Laboratorios
 
-Este espacio contiene el código fuente, documentaciones y archivos correspondientes a las simulaciones y modelos desarrollados a lo largo del cursado de la asignatura.
+* **Laboratorio 1 (`inicio.html` / `calculador.html`):** Generador de Números Pseudoaleatorios mediante el Método Congruencial Multiplicativo y gráficos de dispersión 2D / secuencial.
+* **Laboratorio 2 (`simulador.html`):** Simulación estocástica discreta de rendimiento de un servidor empleando variables aleatorias de Poisson, Uniforme y Normal.
+* **Laboratorio 3 (`laboratorio3.html` / `INFORME_LABORATORIO_3.md` / `vensim/modelo_servidor_lab3.mdl`):** Proyecto de Simulación bajo el enfoque de **Dinámica de Sistemas Continuos** (Diagrama Causal, Diagrama de Forrester en Vensim, Formulación de Ecuaciones Diferenciales, Experimentación Multicorrida y Análisis de Resultados).
 
 ## Tecnologías y Herramientas
 
-html y css junto a javascript
+* HTML5, CSS3, Bootstrap 5 y JavaScript (Chart.js)
+* Vensim PLE (`vensim/modelo_servidor_lab3.mdl`)
 
 ## 🔗 Enlaces
 
 * [Repositorio GitHub](https://github.com/franz147f/MODELOS-Y-SIMULACION)
 
-  ## ⚙️ Cómo clonar este repositorio
+## ⚙️ Cómo clonar este repositorio
 
 Para descargar este proyecto en tu entorno local y empezar a trabajar con el código, abre tu terminal y ejecuta el siguiente comando:
 

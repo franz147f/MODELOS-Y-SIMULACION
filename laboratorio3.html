@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio 3 - Proyecto de Simulación (Dinámica de Sistemas)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/estilos.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4 mb-5">
+        <!-- Encabezado y Navegación entre Laboratorios -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-primary mb-1">Modelos y Simulación - UNCa</span>
+                <h1 class="mb-0">Laboratorio 3: Proyecto de Simulación</h1>
+                <p class="text-secondary mb-0">Enfoque de Dinámica de Sistemas Continuos (Modelado de Forrester / Vensim)</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="inicio.html" class="btn btn-outline-secondary btn-sm">Lab 1: Generador</a>
+                <a href="simulador.html" class="btn btn-outline-info btn-sm">← Lab 2: Simulador Discreto</a>
+                <button type="button" onclick="descargarModeloVensim()" class="btn btn-success btn-sm fw-bold">
+                    ⬇ Descargar Modelo Vensim (.mdl)
+                </button>
+            </div>
+        </div>
+
+        <!-- Índice rápido de Apartados (a - h) según la consigna -->
+        <nav class="nav nav-apartados mb-4 flex-wrap">
+            <a class="nav-link" href="#apartado-a">a) Título</a>
+            <a class="nav-link" href="#apartado-b">b) Planteamiento e Hipótesis</a>
+            <a class="nav-link" href="#apartado-c">c) Definición de Variables</a>
+            <a class="nav-link" href="#apartado-d">d) Diagrama Causal</a>
+            <a class="nav-link" href="#apartado-e">e) Diagrama de Forrester (Vensim)</a>
+            <a class="nav-link" href="#apartado-f">f) Formulación de Ecuaciones</a>
+            <a class="nav-link" href="#apartado-g">g) Experimentación</a>
+            <a class="nav-link" href="#apartado-h">h) Análisis de Resultados y Conclusiones</a>
+        </nav>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO A: TÍTULO -->
+        <!-- ================================================================== -->
+        <section id="apartado-a" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">a</span>
+                <h5 class="mb-0 text-info fw-bold">Título del Proyecto</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-warning mb-2">“Simulación de Rendimiento de Servidor”</h3>
+                <p class="texto-descripcion mb-0">
+                    <strong>Subtítulo Sistémico:</strong> Reinterpretación continua bajo el paradigma de la <em>Dinámica de Sistemas</em> 
+                    para el análisis de acumulación en cola (buffer), contención de recursos de CPU/Base de Datos y cumplimiento de acuerdos de nivel de servicio (SLA).
+                </p>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO B: PLANTEAMIENTO DEL PROBLEMA E HIPÓTESIS -->
+        <!-- ================================================================== -->
+        <section id="apartado-b" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">b</span>
+                <h5 class="mb-0 text-info fw-bold">Planteamiento del Problema (Perspectiva Sistémica) e Hipótesis</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="text-warning fw-bold">1. Redefinición Sistémica de la Problemática</h6>
+                <p class="texto-descripcion">
+                    En el <strong>Laboratorio 2</strong> se evaluó el rendimiento de un servidor de aplicaciones tratando cada petición como un evento aleatorio aislado 
+                    (distribución de Poisson para arribos, 60% de <em>Consultas Simples</em>, 35% de <em>Transacciones de Base de Datos</em> y 5% de <em>Errores de Red</em>). 
+                    Sin embargo, en un entorno real de operación continua, las solicitudes no son independientes en el tiempo: cuando el flujo de entrada supera 
+                    momentáneamente la capacidad de respuesta, las peticiones se acumulan en la memoria formando un stock de <strong>Peticiones en Cola (Buffer)</strong>.
+                </p>
+                <p class="texto-descripcion">
+                    Adoptando el enfoque de la <strong>Dinámica de Sistemas</strong>, el rendimiento del servidor emerge de la interacción de estructuras de retroalimentación no lineales: 
+                    un aumento en las <em>Peticiones en Cola</em> eleva el <em>Índice de Saturación</em>, lo cual no solo incrementa la <em>Latencia Promedio del Sistema</em> y los 
+                    descartes por <em>Timeout</em>, sino que además induce bloqueos en la Base de Datos y cambios de contexto en la CPU (fenómeno de <em>thrashing</em>), reduciendo 
+                    la <em>Eficiencia Operativa del Servidor</em> y enlenteciendo aún más los flujos de salida de consultas simples y transacciones BD.
+                </p>
+
+                <div class="caja-hipotesis mt-3">
+                    <h6 class="text-info fw-bold mb-1">2. Hipótesis Dinámica a Validar o Refutar (SLA Sistémico)</h6>
+                    <p class="texto-descripcion mb-0">
+                        <strong>Hipótesis:</strong> <em>“Bajo una demanda nominal sostenida ($\lambda_0 \le 120\text{ peticiones/hora}$) con capacidad estándar de servidor ($K_{srv} = 1.0$) 
+                        y un buffer nominal de $C_{max} = 100\text{ peticiones}$, los bucles de retroalimentación negativa (procesamiento y control de admisión) dominarán el sistema, 
+                        alcanzando un <strong>equilibrio estacionario estable</strong> donde el porcentaje de peticiones con <strong>Alta Latencia / Timeout (Incumplimiento SLA) no supera el 15%</strong>. 
+                        En cambio, ante escenarios de sobrecarga ($\lambda_0 \ge 180\text{ pet/h}$) o alta contención de BD sin escalamiento de recursos, el bucle reforzador de degradación ($R_1$) 
+                        dominará la dinámica, disparando la latencia y superando el umbral crítico del 15%.”</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO C: DEFINICIÓN DE VARIABLES -->
+        <!-- ================================================================== -->
+        <section id="apartado-c" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center">
+                    <span class="badge-apartado">c</span>
+                    <h5 class="mb-0 text-info fw-bold">Definición de Variables del Sistema</h5>
+                </div>
+                <span class="badge bg-secondary">1 Nivel (Stock) • 4 Variables de Flujo • 5 Variables Auxiliares • 8 Parámetros</span>
+            </div>
+            <div class="card-body">
+                <p class="texto-descripcion mb-3">
+                    El modelo cumple y supera los requisitos mínimos de la consigna incorporando <strong>1 variable de nivel (stock)</strong>, 
+                    <strong>4 variables de flujo</strong> (1 flujo de entrada y 3 flujos de salida diferenciados según la tipología del Laboratorio 2) y 
+                    <strong>5 variables auxiliares</strong> que articulan los bucles de retroalimentación:
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                        <thead class="table-secondary text-dark text-center">
+                            <tr>
+                                <th style="width: 16%;">Tipo de Variable</th>
+                                <th style="width: 24%;">Nombre en el Modelo (Vensim)</th>
+                                <th style="width: 10%;">Símbolo</th>
+                                <th style="width: 12%;">Unidades</th>
+                                <th style="width: 38%;">Definición y Rol Sistémico</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- NIVEL (STOCK) -->
+                            <tr>
+                                <td class="text-center"><span class="badge bg-primary fs-6">Nivel (Stock)</span></td>
+                                <td class="fw-bold text-info">Peticiones en Cola</td>
+                                <td class="text-center"><code>Q(t)</code></td>
+                                <td class="text-center"><code>peticiones</code></td>
+                                <td>Acumulación de solicitudes pendientes de atención en el buffer de memoria del servidor en el instante $t$.</td>
+                            </tr>
+                            <!-- VARIABLES DE FLUJO (4) -->
+                            <tr>
+                                <td class="text-center"><span class="badge bg-success">Flujo (Entrada)</span></td>
+                                <td class="fw-bold text-success">Flujo de Arribo de Peticiones</td>
+                                <td class="text-center"><code>F_arribo(t)</code></td>
+                                <td class="text-center"><code>peticiones/Hora</code></td>
+                                <td>Tasa de ingreso efectivo de nuevas solicitudes al buffer del servidor, regulada por el control de admisión.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-info text-dark">Flujo (Salida 1)</span></td>
+                                <td class="fw-bold">Flujo de Procesamiento Consultas Simples</td>
+                                <td class="text-center"><code>F_simples(t)</code></td>
+                                <td class="text-center"><code>peticiones/Hora</code></td>
+                                <td>Tasa de evacuación de consultas ligeras (60% de la carga nominal) completadas exitosamente por el servidor.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-warning text-dark">Flujo (Salida 2)</span></td>
+                                <td class="fw-bold">Flujo de Procesamiento Transacciones BD</td>
+                                <td class="text-center"><code>F_bd(t)</code></td>
+                                <td class="text-center"><code>peticiones/Hora</code></td>
+                                <td>Tasa de evacuación de transacciones de Base de Datos (35% de la carga nominal), dependientes de la eficiencia del motor BD.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-danger">Flujo (Salida 3)</span></td>
+                                <td class="fw-bold">Flujo de Descarte por Timeout y Error</td>
+                                <td class="text-center"><code>F_descarte(t)</code></td>
+                                <td class="text-center"><code>peticiones/Hora</code></td>
+                                <td>Tasa de peticiones abortadas por fallas de red (5% base) más los rechazos por vencimiento de tiempo de espera (timeout).</td>
+                            </tr>
+                            <!-- VARIABLES AUXILIARES (5) -->
+                            <tr>
+                                <td class="text-center"><span class="badge bg-secondary">Auxiliar 1</span></td>
+                                <td class="fw-bold text-warning">Índice de Saturación del Servidor</td>
+                                <td class="text-center"><code>S(t)</code></td>
+                                <td class="text-center"><code>Dmnl (ratio)</code></td>
+                                <td>Relación entre las peticiones acumuladas en cola y la capacidad nominal del buffer ($Q(t)/C_{max}$).</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-secondary">Auxiliar 2</span></td>
+                                <td class="fw-bold text-warning">Eficiencia Operativa del Servidor</td>
+                                <td class="text-center"><code>E(t)</code></td>
+                                <td class="text-center"><code>Dmnl [0, 1]</code></td>
+                                <td>Rendimiento efectivo del procesador y motor de BD; disminuye no linealmente cuando crece la contención de recursos.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-secondary">Auxiliar 3</span></td>
+                                <td class="fw-bold text-warning">Latencia Promedio del Sistema</td>
+                                <td class="text-center"><code>L(t)</code></td>
+                                <td class="text-center"><code>ms</code></td>
+                                <td>Tiempo medio de respuesta percibido por el cliente, integrando la latencia base y la demora por saturación de cola.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-secondary">Auxiliar 4</span></td>
+                                <td class="fw-bold text-warning">Porcentaje de Incumplimiento SLA</td>
+                                <td class="text-center"><code>I_SLA(t)</code></td>
+                                <td class="text-center"><code>%</code></td>
+                                <td>Indicador clave de desempeño que estima el porcentaje de peticiones lentas o descartadas frente al límite del 15%.</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge bg-secondary">Auxiliar 5</span></td>
+                                <td class="fw-bold text-warning">Factor de Control de Admisión</td>
+                                <td class="text-center"><code>B(t)</code></td>
+                                <td class="text-center"><code>Dmnl [0.1, 1]</code></td>
+                                <td>Mecanismo de <em>backpressure</em> que modera la admisión de tráfico nuevo cuando la saturación del buffer es crítica.</td>
+                            </tr>
+                            <!-- PARÁMETROS CONSTANTES -->
+                            <tr>
+                                <td class="text-center"><span class="badge border border-light text-light">Parámetros</span></td>
+                                <td colspan="4" class="small">
+                                    <code>Tasa Base de Demanda</code> ($\lambda_0 = 120\text{ pet/h}$) • 
+                                    <code>Capacidad Nominal del Buffer</code> ($C_{max} = 100\text{ pet}$) • 
+                                    <code>Factor de Capacidad del Servidor</code> ($K_{srv} = 1.0$) • 
+                                    <code>Tiempo Medio de Procesamiento</code> ($\tau_{proc} = 0.25\text{ h}$) • 
+                                    <code>Proporción Consultas Simples</code> ($p_{simple} = 0.60$) • 
+                                    <code>Proporción Transacciones BD</code> ($p_{bd} = 0.35$) • 
+                                    <code>Coeficiente de Contención</code> ($\alpha_{cont} = 1.2$) • 
+                                    <code>Latencia Base Ponderada</code> ($L_{base} = 155\text{ ms}$).
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO D: DIAGRAMA CAUSAL Y BUCLES DE RETROALIMENTACIÓN -->
+        <!-- ================================================================== -->
+        <section id="apartado-d" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">d</span>
+                <h5 class="mb-0 text-info fw-bold">Diagrama Causal (CLD) y Bucles de Retroalimentación</h5>
+            </div>
+            <div class="card-body">
+                <p class="texto-descripcion">
+                    El <strong>Diagrama de Bucles Causales (CLD)</strong> expone las relaciones de causa-efecto con su respectiva polaridad 
+                    (<strong><code>+</code></strong> cambio en el mismo sentido; <strong><code>-</code></strong> cambio en sentido opuesto) y los 
+                    <strong>cuatro bucles de retroalimentación</strong> que gobiernan la estabilidad o el colapso del servidor:
+                </p>
+
+                <!-- Diagrama Causal SVG -->
+                <div class="contenedor-diagrama-svg mb-4">
+                    <svg viewBox="0 0 980 500" width="100%" style="max-width: 960px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrowPos" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                                <polygon points="0 0, 10 4, 0 8" fill="#38bdf8" />
+                            </marker>
+                            <marker id="arrowNeg" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                                <polygon points="0 0, 10 4, 0 8" fill="#f43f5e" />
+                            </marker>
+                            <marker id="arrowLoopR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                                <polygon points="0 0, 8 3, 0 6" fill="#fbbf24" />
+                            </marker>
+                        </defs>
+
+                        <!-- Título del Diagrama Causal -->
+                        <text x="490" y="28" fill="#93c5fd" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">
+                            DIAGRAMA CAUSAL (CLD) - DINÁMICA DE RENDIMIENTO DEL SERVIDOR
+                        </text>
+
+                        <!-- NODOS PRINCIPALES -->
+                        <!-- Nodo Central: Peticiones en Cola -->
+                        <rect x="375" y="195" width="210" height="54" rx="10" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2.5"/>
+                        <text x="480" y="220" fill="#ffffff" font-family="Arial" font-size="15" font-weight="bold" text-anchor="middle">Peticiones en Cola</text>
+                        <text x="480" y="238" fill="#93c5fd" font-family="Arial" font-size="11" text-anchor="middle">(Nivel / Stock Q)</text>
+
+                        <!-- Nodo Izquierda Arriba: Flujo de Arribo -->
+                        <rect x="70" y="100" width="195" height="46" rx="8" fill="#064e3b" stroke="#34d399" stroke-width="2"/>
+                        <text x="167" y="120" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Flujo de Arribo</text>
+                        <text x="167" y="136" fill="#a7f3d0" font-family="Arial" font-size="11" text-anchor="middle">de Peticiones</text>
+
+                        <!-- Nodo Izquierda Abajo: Control de Admisión -->
+                        <rect x="65" y="295" width="205" height="46" rx="8" fill="#1f2937" stroke="#9ca3af" stroke-width="1.8"/>
+                        <text x="167" y="315" fill="#f3f4f6" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Factor de Control de</text>
+                        <text x="167" y="331" fill="#9ca3af" font-family="Arial" font-size="11" text-anchor="middle">Admisión (Backpressure)</text>
+
+                        <!-- Nodo Abajo Centro: Índice de Saturación -->
+                        <rect x="380" y="370" width="200" height="48" rx="8" fill="#312e81" stroke="#818cf8" stroke-width="2"/>
+                        <text x="480" y="392" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Índice de Saturación</text>
+                        <text x="480" y="408" fill="#c7d2fe" font-family="Arial" font-size="11" text-anchor="middle">del Servidor S(t)</text>
+
+                        <!-- Nodo Arriba Centro-Derecha: Flujos de Atención (Simples y BD) -->
+                        <rect x="365" y="55" width="235" height="52" rx="8" fill="#0f766e" stroke="#2dd4bf" stroke-width="2"/>
+                        <text x="482" y="77" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Flujos de Procesamiento</text>
+                        <text x="482" y="95" fill="#99f6e4" font-family="Arial" font-size="11" text-anchor="middle">(Consultas Simples + Trans. BD)</text>
+
+                        <!-- Nodo Derecha Medio: Eficiencia Operativa -->
+                        <rect x="720" y="195" width="215" height="52" rx="8" fill="#78350f" stroke="#fbbf24" stroke-width="2"/>
+                        <text x="827" y="218" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Eficiencia Operativa</text>
+                        <text x="827" y="235" fill="#fde68a" font-family="Arial" font-size="11" text-anchor="middle">(Contención CPU / Locks BD)</text>
+
+                        <!-- Nodo Derecha Abajo: Latencia Promedio e Incumplimiento SLA -->
+                        <rect x="715" y="365" width="225" height="54" rx="8" fill="#4c1d95" stroke="#c084fc" stroke-width="2"/>
+                        <text x="827" y="388" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Latencia Promedio y</text>
+                        <text x="827" y="406" fill="#e9d5ff" font-family="Arial" font-size="11" text-anchor="middle">% Incumplimiento SLA</text>
+
+                        <!-- Nodo Derecha Arriba: Flujo de Descarte por Timeout -->
+                        <rect x="720" y="60" width="215" height="48" rx="8" fill="#7f1d1d" stroke="#f87171" stroke-width="2"/>
+                        <text x="827" y="82" fill="#ffffff" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">Flujo de Descarte por</text>
+                        <text x="827" y="98" fill="#fecaca" font-family="Arial" font-size="11" text-anchor="middle">Timeout y Error de Red</text>
+
+                        <!-- ARCOS CAUSALES Y POLARIDADES -->
+                        <!-- 1. Flujo de Arribo -> (+) Peticiones en Cola -->
+                        <path d="M 265 125 Q 340 140 395 195" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="342" y="148" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 2. Peticiones en Cola -> (+) Flujos de Procesamiento -->
+                        <path d="M 445 195 Q 420 150 445 107" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="412" y="155" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 3. Flujos de Procesamiento -> (-) Peticiones en Cola -->
+                        <path d="M 515 107 Q 540 150 515 195" fill="none" stroke="#f43f5e" stroke-width="2.3" marker-end="url(#arrowNeg)"/>
+                        <text x="540" y="155" fill="#f43f5e" font-family="Arial" font-size="20" font-weight="bold">−</text>
+
+                        <!-- 4. Peticiones en Cola -> (+) Índice de Saturación -->
+                        <path d="M 480 249 L 480 370" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="492" y="318" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 5. Índice de Saturación -> (-) Factor de Control de Admisión -->
+                        <path d="M 380 390 Q 270 385 205 341" fill="none" stroke="#f43f5e" stroke-width="2.3" marker-end="url(#arrowNeg)"/>
+                        <text x="275" y="388" fill="#f43f5e" font-family="Arial" font-size="20" font-weight="bold">−</text>
+
+                        <!-- 6. Factor de Control de Admisión -> (+) Flujo de Arribo -->
+                        <path d="M 167 295 L 167 146" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="145" y="225" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 7. Índice de Saturación -> (-) Eficiencia Operativa -->
+                        <path d="M 580 380 Q 700 340 785 247" fill="none" stroke="#f43f5e" stroke-width="2.3" marker-end="url(#arrowNeg)"/>
+                        <text x="698" y="335" fill="#f43f5e" font-family="Arial" font-size="20" font-weight="bold">−</text>
+
+                        <!-- 8. Eficiencia Operativa -> (+) Flujos de Procesamiento -->
+                        <path d="M 785 195 Q 700 120 600 88" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="705" y="132" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 9. Índice de Saturación -> (+) Latencia Promedio y SLA -->
+                        <path d="M 580 402 L 715 402" fill="none" stroke="#38bdf8" stroke-width="2.3" marker-end="url(#arrowPos)"/>
+                        <text x="645" y="394" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 10. Eficiencia Operativa -> (-) Latencia Promedio -->
+                        <path d="M 827 247 L 827 365" fill="none" stroke="#f43f5e" stroke-width="2.3" marker-end="url(#arrowNeg)"/>
+                        <text x="840" y="312" fill="#f43f5e" font-family="Arial" font-size="20" font-weight="bold">−</text>
+
+                        <!-- 11. Índice de Saturación / Cola -> (+) Flujo de Descarte Timeout -->
+                        <path d="M 585 212 Q 700 165 760 108" fill="none" stroke="#38bdf8" stroke-width="2.2" marker-end="url(#arrowPos)"/>
+                        <text x="678" y="172" fill="#38bdf8" font-family="Arial" font-size="18" font-weight="bold">+</text>
+
+                        <!-- 12. Flujo de Descarte Timeout -> (-) Peticiones en Cola -->
+                        <path d="M 720 82 Q 635 125 565 195" fill="none" stroke="#f43f5e" stroke-width="2.2" marker-end="url(#arrowNeg)"/>
+                        <text x="625" y="128" fill="#f43f5e" font-family="Arial" font-size="20" font-weight="bold">−</text>
+
+                        <!-- ETIQUETAS DE LOS BUCLES DE RETROALIMENTACIÓN -->
+                        <!-- B1: Bucle Compensador de Evacuación -->
+                        <circle cx="480" cy="150" r="20" fill="#0f172a" stroke="#2dd4bf" stroke-width="2"/>
+                        <text x="480" y="148" fill="#2dd4bf" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">B1 (-)</text>
+                        <text x="480" y="160" fill="#99f6e4" font-family="Arial" font-size="8" text-anchor="middle">Drenaje</text>
+
+                        <!-- B2: Bucle Compensador de Backpressure -->
+                        <circle cx="295" cy="270" r="24" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                        <text x="295" y="267" fill="#38bdf8" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">B2 (-)</text>
+                        <text x="295" y="280" fill="#bae6fd" font-family="Arial" font-size="8" text-anchor="middle">Admisión</text>
+
+                        <!-- B3: Bucle Compensador de Timeout -->
+                        <circle cx="655" cy="145" r="22" fill="#0f172a" stroke="#f87171" stroke-width="2"/>
+                        <text x="655" y="142" fill="#f87171" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">B3 (-)</text>
+                        <text x="655" y="155" fill="#fecaca" font-family="Arial" font-size="8" text-anchor="middle">Timeout</text>
+
+                        <!-- R1: Bucle Reforzador de Contención (Thrashing) -->
+                        <circle cx="635" cy="265" r="26" fill="#0f172a" stroke="#fbbf24" stroke-width="2.5"/>
+                        <text x="635" y="262" fill="#fbbf24" font-family="Arial" font-size="13" font-weight="bold" text-anchor="middle">R1 (+)</text>
+                        <text x="635" y="276" fill="#fde68a" font-family="Arial" font-size="8.5" text-anchor="middle">Contención</text>
+
+                        <!-- Leyenda inferior -->
+                        <text x="490" y="475" fill="#94a3b8" font-family="Arial" font-size="12" text-anchor="middle">
+                            Referencias: (+) Relación Causal Positiva | (−) Relación Causal Negativa | B1, B2, B3: Bucles Negativos (Compensadores) | R1: Bucle Positivo (Reforzador)
+                        </text>
+                    </svg>
+                </div>
+
+                <!-- Explicación detallada de los 4 Bucles de Retroalimentación -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="bucle-card border-info">
+                            <h6 class="text-info fw-bold mb-1">🔄 Bucle B₁ (Negativo / Compensador): Evacuación por Procesamiento</h6>
+                            <p class="small text-secondary mb-1">
+                                <code>Peticiones en Cola (+) → Flujos Consultas Simples y Trans. BD (−) → Peticiones en Cola</code>
+                            </p>
+                            <p class="texto-descripcion small mb-0">
+                                A mayor volumen de solicitudes acumuladas en el buffer, mayor es el caudal de salida procesado por los hilos activos del servidor, 
+                                tendiendo a drenar la cola y llevar al sistema hacia un equilibrio estable.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bucle-card border-warning">
+                            <h6 class="text-warning fw-bold mb-1">⚡ Bucle R₁ (Positivo / Reforzador): Contención y Thrashing de BD/CPU</h6>
+                            <p class="small text-secondary mb-1">
+                                <code>Peticiones en Cola (+) → Índice Saturación (−) → Eficiencia Operativa (+) → Flujos Salida (−) → Peticiones en Cola</code>
+                            </p>
+                            <p class="texto-descripcion small mb-0">
+                                Al contar con dos enlaces negativos, el producto de polaridades es <strong>positivo (+)</strong>: si la cola crece en exceso, 
+                                la contención de bloqueos en la Base de Datos reduce la <em>Eficiencia Operativa</em>, disminuyendo la tasa de atención y 
+                                acumulando aún más peticiones en cola (degradación en cascada).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bucle-card border-primary">
+                            <h6 class="text-primary fw-bold mb-1">🛡️ Bucle B₂ (Negativo / Compensador): Control de Admisión (Backpressure)</h6>
+                            <p class="small text-secondary mb-1">
+                                <code>Peticiones en Cola (+) → Índice Saturación (−) → Factor Control Admisión (+) → Flujo Arribo (+) → Peticiones en Cola</code>
+                            </p>
+                            <p class="texto-descripcion small mb-0">
+                                Cuando el buffer se aproxima a su capacidad límite, el mecanismo de <em>backpressure</em> restringe gradualmente el ingreso de nuevas 
+                                peticiones para evitar el desbordamiento de memoria del servidor.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bucle-card border-danger">
+                            <h6 class="text-danger fw-bold mb-1">⏱️ Bucle B₃ (Negativo / Compensador): Purga Forzada por Timeout</h6>
+                            <p class="small text-secondary mb-1">
+                                <code>Peticiones en Cola (+) → Índice Saturación (+) → Flujo Descarte por Timeout (−) → Peticiones en Cola</code>
+                            </p>
+                            <p class="texto-descripcion small mb-0">
+                                Cuando la congestión eleva los tiempos de espera por encima de la tolerancia de red, las peticiones expiran por <em>timeout</em> y 
+                                abandonan la cola, aliviando la carga física pero penalizando directamente el cumplimiento del SLA.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO E: DIAGRAMA DE FORRESTER (VENSIM) -->
+        <!-- ================================================================== -->
+        <section id="apartado-e" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center">
+                    <span class="badge-apartado">e</span>
+                    <h5 class="mb-0 text-info fw-bold">Diagrama de Forrester (Estructura Vensim PLE)</h5>
+                </div>
+                <button type="button" onclick="descargarModeloVensim()" class="btn btn-sm btn-outline-success">
+                    Descargar archivo modelo_servidor_lab3.mdl para Vensim
+                </button>
+            </div>
+            <div class="card-body">
+                <p class="texto-descripcion mb-3">
+                    A continuación se presenta el <strong>Diagrama de Niveles y Flujos (Forrester)</strong> con la notación estándar del software 
+                    <strong>Vensim PLE</strong>: el rectángulo central representa el <em>Nivel (Stock)</em> <code>Peticiones en Cola</code>, las tuberías de doble línea 
+                    con válvulas representan las <strong>4 variables de flujo</strong> (1 flujo de entrada y 3 flujos de salida hacia nubes sumidero), y los arcos azules 
+                    vinculan las <strong>variables auxiliares</strong> y constantes que regulan las válvulas:
+                </p>
+
+                <!-- Diagrama de Forrester estilo Vensim PLE -->
+                <div class="contenedor-forrester-vensim mb-3">
+                    <svg viewBox="0 0 1020 540" width="100%" style="max-width: 1000px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Flecha azul clásica de información de Vensim -->
+                            <marker id="vensimArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#1d4ed8" />
+                            </marker>
+                            <!-- Flecha de flujo físico de material (peticiones) -->
+                            <marker id="flowHead" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto">
+                                <polygon points="0 0, 12 5, 0 10" fill="#0f172a" />
+                            </marker>
+                        </defs>
+
+                        <!-- Encabezado tipo lienzo Vensim -->
+                        <text x="510" y="24" fill="#1e293b" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle">
+                            MODELO DE FORRESTER (VENSIM PLE) — DINÁMICA CONTINUA DE SERVIDOR (1 NIVEL, 4 FLUJOS, 5 AUXILIARES)
+                        </text>
+
+                        <!-- NUBE FUENTE (Izquierda) -->
+                        <path d="M 45 220 C 35 205, 55 190, 70 200 C 82 188, 105 198, 98 215 C 110 228, 95 245, 78 240 C 65 250, 42 242, 45 220 Z"
+                              fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+
+                        <!-- TUBERÍA FLUJO DE ENTRADA (Flujo de Arribo de Peticiones) -->
+                        <line x1="100" y1="217" x2="365" y2="217" stroke="#0f172a" stroke-width="6"/>
+                        <line x1="100" y1="217" x2="365" y2="217" stroke="#ffffff" stroke-width="2"/>
+                        <polygon points="362,209 378,217 362,225" fill="#0f172a"/>
+                        <!-- Válvula de Entrada -->
+                        <polygon points="215,205 245,229 245,205 215,229" fill="#38bdf8" stroke="#0f172a" stroke-width="1.8"/>
+                        <rect x="225" y="196" width="10" height="9" fill="#0f172a"/>
+                        <text x="230" y="182" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Flujo de Arribo</text>
+                        <text x="230" y="195" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">de Peticiones</text>
+
+                        <!-- STOCK / NIVEL CENTRAL: Peticiones en Cola -->
+                        <rect x="378" y="182" width="180" height="72" fill="#dbeafe" stroke="#0f172a" stroke-width="3"/>
+                        <text x="468" y="215" fill="#0f172a" font-family="Arial" font-size="15" font-weight="bold" text-anchor="middle">Peticiones en Cola</text>
+                        <text x="468" y="235" fill="#1e40af" font-family="Arial" font-size="11" font-weight="bold" text-anchor="middle">[Nivel / Stock Q(t)]</text>
+
+                        <!-- TUBERÍA FLUJO DE SALIDA 1 (Arriba Derecha): Flujo Consultas Simples -->
+                        <path d="M 558 195 L 650 105 L 865 105" fill="none" stroke="#0f172a" stroke-width="6"/>
+                        <path d="M 558 195 L 650 105 L 865 105" fill="none" stroke="#ffffff" stroke-width="2"/>
+                        <polygon points="862,97 878,105 862,113" fill="#0f172a"/>
+                        <!-- Válvula Salida 1 -->
+                        <polygon points="725,93 755,117 755,93 725,117" fill="#2dd4bf" stroke="#0f172a" stroke-width="1.8"/>
+                        <text x="740" y="70" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Flujo de Procesamiento</text>
+                        <text x="740" y="84" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Consultas Simples</text>
+                        <!-- Nube Sumidero 1 -->
+                        <path d="M 885 105 C 878 92, 896 80, 910 88 C 922 78, 942 88, 936 102 C 948 112, 932 128, 916 122 C 904 132, 882 122, 885 105 Z"
+                              fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+
+                        <!-- TUBERÍA FLUJO DE SALIDA 2 (Centro Derecha): Flujo Transacciones BD -->
+                        <line x1="558" y1="218" x2="865" y2="218" stroke="#0f172a" stroke-width="6"/>
+                        <line x1="558" y1="218" x2="865" y2="218" stroke="#ffffff" stroke-width="2"/>
+                        <polygon points="862,210 878,218 862,226" fill="#0f172a"/>
+                        <!-- Válvula Salida 2 -->
+                        <polygon points="725,206 755,230 755,206 725,230" fill="#fbbf24" stroke="#0f172a" stroke-width="1.8"/>
+                        <text x="740" y="185" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Flujo de Procesamiento</text>
+                        <text x="740" y="199" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Transacciones BD</text>
+                        <!-- Nube Sumidero 2 -->
+                        <path d="M 885 218 C 878 205, 896 193, 910 201 C 922 191, 942 201, 936 215 C 948 225, 932 241, 916 235 C 904 245, 882 235, 885 218 Z"
+                              fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+
+                        <!-- TUBERÍA FLUJO DE SALIDA 3 (Abajo Derecha): Flujo Descarte por Timeout y Error -->
+                        <path d="M 558 240 L 650 325 L 865 325" fill="none" stroke="#0f172a" stroke-width="6"/>
+                        <path d="M 558 240 L 650 325 L 865 325" fill="none" stroke="#ffffff" stroke-width="2"/>
+                        <polygon points="862,317 878,325 862,333" fill="#0f172a"/>
+                        <!-- Válvula Salida 3 -->
+                        <polygon points="725,313 755,337 755,313 725,337" fill="#f87171" stroke="#0f172a" stroke-width="1.8"/>
+                        <text x="740" y="354" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Flujo de Descarte por</text>
+                        <text x="740" y="368" fill="#0f172a" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Timeout y Error</text>
+                        <!-- Nube Sumidero 3 -->
+                        <path d="M 885 325 C 878 312, 896 300, 910 308 C 922 298, 942 308, 936 322 C 948 332, 932 348, 916 342 C 904 352, 882 342, 885 325 Z"
+                              fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+
+                        <!-- VARIABLES AUXILIARES (Círculos/Etiquetas estilo Vensim) -->
+                        <!-- Auxiliar 1: Índice de Saturación del Servidor -->
+                        <ellipse cx="468" cy="370" rx="88" ry="24" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+                        <text x="468" y="367" fill="#0f172a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Índice de Saturación</text>
+                        <text x="468" y="381" fill="#78350f" font-family="Arial" font-size="10.5" text-anchor="middle">del Servidor (Aux 1)</text>
+
+                        <!-- Auxiliar 2: Eficiencia Operativa del Servidor -->
+                        <ellipse cx="620" cy="272" rx="86" ry="23" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+                        <text x="620" y="269" fill="#0f172a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Eficiencia Operativa</text>
+                        <text x="620" y="283" fill="#78350f" font-family="Arial" font-size="10.5" text-anchor="middle">del Servidor (Aux 2)</text>
+
+                        <!-- Auxiliar 3: Latencia Promedio del Sistema -->
+                        <ellipse cx="645" cy="445" rx="86" ry="23" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2"/>
+                        <text x="645" y="442" fill="#0f172a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Latencia Promedio</text>
+                        <text x="645" y="456" fill="#581c87" font-family="Arial" font-size="10.5" text-anchor="middle">del Sistema (Aux 3)</text>
+
+                        <!-- Auxiliar 4: Porcentaje de Incumplimiento SLA -->
+                        <ellipse cx="875" cy="445" rx="95" ry="24" fill="#ffe4e6" stroke="#be123c" stroke-width="2"/>
+                        <text x="875" y="442" fill="#0f172a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Porcentaje Incumplimiento</text>
+                        <text x="875" y="456" fill="#881337" font-family="Arial" font-size="10.5" text-anchor="middle">SLA (Aux 4)</text>
+
+                        <!-- Auxiliar 5: Factor de Control de Admisión -->
+                        <ellipse cx="230" cy="340" rx="86" ry="23" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+                        <text x="230" y="337" fill="#0f172a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Factor de Control</text>
+                        <text x="230" y="351" fill="#14532d" font-family="Arial" font-size="10.5" text-anchor="middle">de Admisión (Aux 5)</text>
+
+                        <!-- CONSTANTES / PARÁMETROS DEL MODELO -->
+                        <text x="115" y="105" fill="#1e3a8a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Tasa Base de Demanda (λ₀)</text>
+                        <text x="315" y="455" fill="#1e3a8a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Capacidad Nominal Buffer (C_max)</text>
+                        <text x="468" y="475" fill="#1e3a8a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Coeficiente de Contención (α)</text>
+                        <text x="530" y="65" fill="#1e3a8a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Factor Capacidad Servidor (K_srv)</text>
+                        <text x="360" y="95" fill="#1e3a8a" font-family="Arial" font-size="11.5" font-weight="bold" text-anchor="middle">Tiempo Medio Procesamiento (τ)</text>
+
+                        <!-- CONECTORES DE INFORMACIÓN (FLECHAS AZULES VENSIM) -->
+                        <!-- Stock -> Índice de Saturación -->
+                        <path d="M 468 254 L 468 346" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <!-- Capacidad Buffer -> Índice de Saturación -->
+                        <path d="M 335 440 Q 395 415 430 392" fill="none" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#vensimArrow)"/>
+                        <!-- Índice de Saturación -> Factor de Control de Admisión -->
+                        <path d="M 382 365 Q 315 360 285 352" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <!-- Factor de Control de Admisión -> Válvula Flujo Arribo -->
+                        <path d="M 230 317 L 230 232" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <!-- Tasa Base de Demanda -> Válvula Flujo Arribo -->
+                        <path d="M 135 112 Q 185 140 218 198" fill="none" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Índice de Saturación -> Eficiencia Operativa -->
+                        <path d="M 525 352 Q 575 325 600 295" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <!-- Coeficiente de Contención -> Eficiencia Operativa -->
+                        <path d="M 510 462 Q 580 390 612 296" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Eficiencia Operativa -> Válvula Flujo Consultas Simples -->
+                        <path d="M 645 250 Q 685 180 730 120" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <!-- Eficiencia Operativa -> Válvula Flujo Transacciones BD -->
+                        <path d="M 675 255 L 724 226" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Stock Peticiones en Cola -> Válvulas de Salida 1, 2, 3 -->
+                        <path d="M 515 182 Q 610 120 722 108" fill="none" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#vensimArrow)"/>
+                        <path d="M 558 205 Q 645 190 722 210" fill="none" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#vensimArrow)"/>
+                        <path d="M 520 254 Q 615 315 722 322" fill="none" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Factor Capacidad y Tiempo Medio -> Válvulas Salida -->
+                        <path d="M 580 72 Q 660 80 722 98" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#vensimArrow)"/>
+                        <path d="M 575 76 Q 665 145 725 204" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#vensimArrow)"/>
+                        <path d="M 435 98 Q 590 95 720 103" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Índice de Saturación -> Válvula Flujo Descarte Timeout -->
+                        <path d="M 548 362 Q 645 352 722 332" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Índice Saturación y Eficiencia -> Latencia Promedio -> % Incumplimiento SLA -->
+                        <path d="M 515 390 L 585 430" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <path d="M 628 295 L 642 422" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+                        <path d="M 731 445 L 780 445" fill="none" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#vensimArrow)"/>
+
+                        <!-- Pie del diagrama -->
+                        <text x="510" y="520" fill="#475569" font-family="Arial" font-size="11.5" text-anchor="middle">
+                            Archivo compatible incluido en el repositorio: vensim/modelo_servidor_lab3.mdl (Vensim PLE)
+                        </text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO F: FORMULACIÓN DE ECUACIONES -->
+        <!-- ================================================================== -->
+        <section id="apartado-f" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">f</span>
+                <h5 class="mb-0 text-info fw-bold">Formulación de Ecuaciones Matemáticas y de Vensim</h5>
+            </div>
+            <div class="card-body">
+                <p class="texto-descripcion mb-3">
+                    El comportamiento continuo del sistema está gobernado por una ecuación diferencial de primer orden integrada numéricamente mediante el 
+                    <strong>Método de Euler</strong> con paso temporal $\Delta t = 0.25\text{ horas}$ a lo largo de un horizonte $T = 24\text{ horas}$:
+                </p>
+
+                <h6 class="text-warning fw-bold">1. Ecuación de Estado / Nivel (Stock)</h6>
+                <div class="caja-ecuacion">
+                    <div><strong>Forma Diferencial:</strong> dQ(t)/dt = F_arribo(t) - F_simples(t) - F_bd(t) - F_descarte(t)</div>
+                    <div><strong>Integración de Euler:</strong> Q(t + Δt) = Q(t) + [ F_arribo(t) - F_simples(t) - F_bd(t) - F_descarte(t) ] · Δt</div>
+                    <div><strong>Sintaxis Vensim:</strong> Peticiones en Cola = INTEG(Flujo de Arribo de Peticiones - Flujo de Procesamiento Consultas Simples - Flujo de Procesamiento Transacciones BD - Flujo de Descarte por Timeout y Error, Cola Inicial) &nbsp;[Unidades: peticiones]</div>
+                </div>
+
+                <h6 class="text-warning fw-bold mt-3">2. Ecuaciones de las Cuatro Variables de Flujo</h6>
+                <div class="caja-ecuacion">
+                    <div><strong>(1) Flujo de Arribo de Peticiones (Entrada):</strong></div>
+                    <div>F_arribo(t) = λ₀ · M(t) · B(t) &nbsp;&nbsp;[peticiones/Hora]</div>
+                    <hr class="border-secondary my-2">
+                    <div><strong>(2) Flujo de Procesamiento Consultas Simples (Salida 1 - 60%):</strong></div>
+                    <div>F_simples(t) = p_simple · ( Q(t) / τ_proc ) · K_srv · E(t) &nbsp;&nbsp;donde p_simple = 0.60 &nbsp;&nbsp;[peticiones/Hora]</div>
+                    <hr class="border-secondary my-2">
+                    <div><strong>(3) Flujo de Procesamiento Transacciones BD (Salida 2 - 35%):</strong></div>
+                    <div>F_bd(t) = p_bd · ( Q(t) / τ_proc ) · K_srv · E(t) &nbsp;&nbsp;donde p_bd = 0.35 &nbsp;&nbsp;[peticiones/Hora]</div>
+                    <hr class="border-secondary my-2">
+                    <div><strong>(4) Flujo de Descarte por Timeout y Error (Salida 3 - 5% base + congestión):</strong></div>
+                    <div>F_descarte(t) = Q(t) · [ τ_error + c_timeout · S(t)² ] &nbsp;&nbsp;donde τ_error = 0.05 / τ_proc &nbsp;&nbsp;[peticiones/Hora]</div>
+                </div>
+
+                <h6 class="text-warning fw-bold mt-3">3. Ecuaciones de las Cinco Variables Auxiliares</h6>
+                <div class="caja-ecuacion mb-0">
+                    <div><strong>(Aux 1) Índice de Saturación del Servidor:</strong> S(t) = Q(t) / C_max &nbsp;&nbsp;[Dmnl]</div>
+                    <div><strong>(Aux 2) Eficiencia Operativa del Servidor:</strong> E(t) = 1 / ( 1 + α_cont · S(t)² ) &nbsp;&nbsp;[Dmnl]</div>
+                    <div><strong>(Aux 3) Latencia Promedio del Sistema:</strong> L(t) = L_base · ( 1 + (0.85 · S(t)) / E(t) ) &nbsp;&nbsp;[ms]</div>
+                    <div><strong>(Aux 4) Porcentaje de Incumplimiento SLA:</strong> I_SLA(t) = MIN( 100, 100 · (0.05 + 0.18 · S(t) / E(t)) ) &nbsp;&nbsp;[%]</div>
+                    <div><strong>(Aux 5) Factor de Control de Admisión:</strong> B(t) = MAX( 0.10, 1 - 0.15 · S(t)² ) &nbsp;&nbsp;[Dmnl]</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO G: EXPERIMENTACIÓN (SIMULADOR INTERACTIVO Y ESCENARIOS) -->
+        <!-- ================================================================== -->
+        <section id="apartado-g" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">g</span>
+                <h5 class="mb-0 text-info fw-bold">Experimentación: Corridas de Simulación y Escenarios Hipotéticos</h5>
+            </div>
+            <div class="card-body">
+                <p class="texto-descripcion mb-3">
+                    Selecciona cualquiera de los <strong>4 escenarios experimentales preconfigurados</strong> o modifica libremente los parámetros del modelo 
+                    para observar la respuesta dinámica del servidor:
+                </p>
+
+                <!-- Botones de Escenarios Hipotéticos -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-3">
+                        <button type="button" id="btnEscenario1" onclick="cargarEscenarioPreset(1)" class="btn btn-outline-info w-100 h-100 btn-escenario activo-escenario">
+                            <div class="fw-bold">Escenario 1: Nominal (Base)</div>
+                            <small class="text-light d-block">λ₀ = 120 pet/h | K = 1.0 | C = 100</small>
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnEscenario2" onclick="cargarEscenarioPreset(2)" class="btn btn-outline-danger w-100 h-100 btn-escenario">
+                            <div class="fw-bold">Escenario 2: Pico Sobrecarga</div>
+                            <small class="text-light d-block">λ₀ = 210 pet/h | K = 1.0 | C = 100</small>
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnEscenario3" onclick="cargarEscenarioPreset(3)" class="btn btn-outline-success w-100 h-100 btn-escenario">
+                            <div class="fw-bold">Escenario 3: Escalamiento HW</div>
+                            <small class="text-light d-block">λ₀ = 210 pet/h | K = 1.75 | C = 150</small>
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnEscenario4" onclick="cargarEscenarioPreset(4)" class="btn btn-outline-warning w-100 h-100 btn-escenario">
+                            <div class="fw-bold">Escenario 4: Contención BD</div>
+                            <small class="text-light d-block">λ₀ = 140 pet/h | K = 0.80 | α = 2.4</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="bannerEscenarioActivo" class="alert alert-secondary py-2 px-3 small mb-3"></div>
+
+                <!-- Formulario de Parámetros de Dinámica de Sistemas -->
+                <form id="formDinamicaLab3" class="caja-distribucion">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="tasaDemanda" class="form-label small text-info">Demanda Base λ₀ (pet/hora):</label>
+                            <input type="number" id="tasaDemanda" class="form-control form-control-sm" value="120" min="10" max="600" step="5" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="colaInicial" class="form-label small text-info">Cola Inicial Q(0) (peticiones):</label>
+                            <input type="number" id="colaInicial" class="form-control form-control-sm" value="15" min="0" max="300" step="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="capacidadBuffer" class="form-label small text-info">Capacidad Buffer C_max (pet):</label>
+                            <input type="number" id="capacidadBuffer" class="form-control form-control-sm" value="100" min="20" max="500" step="10" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="factorServidor" class="form-label small text-warning">Capacidad Servidor K_srv (x):</label>
+                            <input type="number" id="factorServidor" class="form-control form-control-sm" value="1.0" min="0.3" max="4.0" step="0.05" required>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="tiempoProc" class="form-label small">Tiempo Proc. τ (h):</label>
+                            <input type="number" id="tiempoProc" class="form-control form-control-sm" value="0.25" min="0.05" max="2.0" step="0.05" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="coefContencion" class="form-label small">Contención BD (α):</label>
+                            <input type="number" id="coefContencion" class="form-control form-control-sm" value="1.2" min="0.1" max="5.0" step="0.1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="umbralSla" class="form-label small">Límite SLA (%):</label>
+                            <input type="number" id="umbralSla" class="form-control form-control-sm" value="15" min="1" max="50" step="1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="horizonteHoras" class="form-label small">Horizonte T (h):</label>
+                            <input type="number" id="horizonteHoras" class="form-control form-control-sm" value="24" min="4" max="72" step="1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pasoIntegracion" class="form-label small">Paso Euler Δt (h):</label>
+                            <select id="pasoIntegracion" class="form-select form-select-sm">
+                                <option value="0.125">0.125 h</option>
+                                <option value="0.25" selected>0.25 h</option>
+                                <option value="0.5">0.50 h</option>
+                                <option value="1">1.00 h</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="modoDemanda" class="form-label small">Patrón Demanda:</label>
+                            <select id="modoDemanda" class="form-select form-select-sm">
+                                <option value="constante" selected>Constante</option>
+                                <option value="ciclica">Onda Diurna 24h</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                            <button type="submit" class="btn btn-primary fw-bold px-4">
+                                ▶ Ejecutar Corrida de Simulación Continua
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- APARTADO H: ANÁLISIS DE RESULTADOS, GRÁFICAS Y CONCLUSIONES -->
+        <!-- ================================================================== -->
+        <section id="apartado-h" class="card bg-dark text-white border-secondary mb-4 shadow-sm">
+            <div class="card-header border-secondary d-flex align-items-center">
+                <span class="badge-apartado">h</span>
+                <h5 class="mb-0 text-info fw-bold">Análisis de Resultados, Gráficas Obtenidas y Conclusiones</h5>
+            </div>
+            <div class="card-body">
+                <!-- Veredicto Dinámico de la Hipótesis -->
+                <div id="alertaHipotesisLab3" class="alert mb-4 shadow-sm"></div>
+
+                <!-- KPIs del Estado Estacionario -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-secondary text-white h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-light">Nivel en Equilibrio Q(T)</h6>
+                                <h3 id="kpiColaEquilibrio" class="fw-bold mb-0">0 pet</h3>
+                                <small id="kpiSaturacion" class="text-light"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark border-info text-white h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-info">Latencia en Equilibrio L(T)</h6>
+                                <h3 id="kpiLatencia" class="fw-bold mb-0">0 ms</h3>
+                                <small id="kpiEficiencia" class="text-secondary"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark border-warning text-white h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-warning">Incumplimiento SLA I_SLA(T)</h6>
+                                <h3 id="kpiSlaFinal" class="fw-bold mb-0">0%</h3>
+                                <span id="kpiEstadoSla" class="badge bg-success mt-1">Cumple SLA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark border-success text-white h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-success">Volumen Acumulado (24h)</h6>
+                                <h3 id="kpiVolumenTotal" class="fw-bold mb-0">0 pet</h3>
+                                <small id="kpiDesgloseFlujos" class="text-secondary d-block mt-1"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICAS 1 Y 2: Nivel (Stock) y Variables de Flujo -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card bg-dark text-white border-secondary h-100">
+                            <div class="card-header border-secondary fw-bold text-info">
+                                Gráfica 1: Evolución del Nivel (Stock) — Peticiones en Cola Q(t)
+                            </div>
+                            <div class="card-body">
+                                <div class="contenedor-grafico-lab3">
+                                    <canvas id="graficoStock"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card bg-dark text-white border-secondary h-100">
+                            <div class="card-header border-secondary fw-bold text-success">
+                                Gráfica 2: Dinámica de las 4 Variables de Flujo (Entrada y Salidas)
+                            </div>
+                            <div class="card-body">
+                                <div class="contenedor-grafico-lab3">
+                                    <canvas id="graficoFlujos"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICAS 3 Y 4: Variables Auxiliares y Comparativa Multicorrida de Escenarios -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card bg-dark text-white border-secondary h-100">
+                            <div class="card-header border-secondary fw-bold text-warning">
+                                Gráfica 3: Variables Auxiliares — SLA (%), Eficiencia (%) y Latencia (ms)
+                            </div>
+                            <div class="card-body">
+                                <div class="contenedor-grafico-lab3">
+                                    <canvas id="graficoAuxiliares"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card bg-dark text-white border-secondary h-100">
+                            <div class="card-header border-secondary fw-bold text-light">
+                                Gráfica 4: Comparación Multicorrida de los 4 Escenarios Hipotéticos
+                            </div>
+                            <div class="card-body">
+                                <div class="contenedor-grafico-lab3">
+                                    <canvas id="graficoComparativoEscenarios"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla Resumen Comparativa de los 4 Escenarios Hipotéticos -->
+                <h5 class="text-warning fw-bold mb-2">1. Tabla Comparativa de Escenarios Experimentales (t = 24 horas)</h5>
+                <div class="table-responsive mb-4">
+                    <table class="table table-dark table-bordered table-striped text-center align-middle mb-0">
+                        <thead class="table-secondary text-dark">
+                            <tr>
+                                <th>Escenario Simulado</th>
+                                <th>Demanda (λ₀)</th>
+                                <th>Parámetros Clave</th>
+                                <th>Cola Equilibrio Q(T)</th>
+                                <th>Eficiencia E(T)</th>
+                                <th>Latencia L(T)</th>
+                                <th>Incumplimiento SLA</th>
+                                <th>Veredicto Hipótesis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaComparativaEscenarios"></tbody>
+                    </table>
+                </div>
+
+                <!-- Tabla de Integración Temporal Paso a Paso -->
+                <h5 class="text-info fw-bold mb-2">2. Tabla de Evolución Continua del Escenario Activo (Método de Euler)</h5>
+                <div class="table-responsive tabla-scroll mb-4" style="max-height: 340px;">
+                    <table class="table table-dark table-sm table-striped table-hover text-center align-middle mb-0">
+                        <thead class="sticky-top">
+                            <tr>
+                                <th>Tiempo (t)</th>
+                                <th>Stock Q(t) [pet]</th>
+                                <th>F_arribo [pet/h]</th>
+                                <th>F_simples [pet/h]</th>
+                                <th>F_bd [pet/h]</th>
+                                <th>F_descarte [pet/h]</th>
+                                <th>Saturación S(t)</th>
+                                <th>Eficiencia E(t)</th>
+                                <th>Latencia L(t)</th>
+                                <th>Incumpl. SLA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaEvolucion"></tbody>
+                    </table>
+                </div>
+
+                <!-- Conclusiones Finales del Proyecto -->
+                <div class="card bg-black border-info p-3">
+                    <h5 class="text-info fw-bold mb-2">3. Conclusiones Generales del Proyecto de Simulación</h5>
+                    <ul class="texto-descripcion mb-0">
+                        <li class="mb-2">
+                            <strong>Validación en Régimen Nominal (Escenario 1):</strong> Bajo una carga de diseño de $\lambda_0 = 120\text{ peticiones/hora}$, 
+                            el bucle de retroalimentación negativa $B_1$ (drenaje por procesamiento de consultas simples y transacciones BD) logra igualar la tasa de entrada 
+                            cuando el stock <code>Peticiones en Cola</code> alcanza aproximadamente <strong>32.5 peticiones</strong> (32.5% del buffer). En este punto de equilibrio, 
+                            la eficiencia se sostiene en el <strong>89.1%</strong>, la latencia se estabiliza en <strong>~203 ms</strong> y el incumplimiento de SLA es del 
+                            <strong>11.6% ($\le 15\%$)</strong>, <strong>validando la hipótesis planteada</strong>.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Efecto del Bucle Reforzador de Contención ante Sobrecarga (Escenarios 2 y 4):</strong> Cuando la demanda aumenta a $\lambda_0 = 210\text{ pet/h}$ 
+                            (Escenario 2) o se incrementa la contención de bloqueos en la Base de Datos a $\alpha_{cont} = 2.4$ (Escenario 4), el crecimiento de la cola activa el 
+                            <strong>bucle positivo $R_1$</strong>: la saturación reduce la <em>Eficiencia Operativa</em> por debajo del 60%, lo que frena la evacuación de transacciones BD 
+                            y eleva el incumplimiento de SLA a <strong>28.1% – 29.8%</strong>, <strong>refutando la aptitud del servidor sin escalamiento</strong>.
+                        </li>
+                        <li class="mb-0">
+                            <strong>Efectividad de la Política de Escalamiento (Escenario 3):</strong> Al incrementar el <em>Factor de Capacidad del Servidor</em> a $K_{srv} = 1.75$ 
+                            (ampliación de hilos de CPU y pool de conexiones BD) junto con un buffer de $C_{max} = 150\text{ peticiones}$, el sistema absorbe sin inconvenientes el pico de 
+                            $210\text{ pet/h}$, reduciendo la latencia a <strong>184 ms</strong> y el incumplimiento SLA a tan solo <strong>9.0%</strong>. Esto demuestra el valor de la 
+                            <strong>Dinámica de Sistemas</strong> para anticipar cuellos de botella estructurales y diseñar políticas de infraestructura antes de su implementación física.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        Bordon Guanco Joel MU:2010 | Franco Sedan Caniza MU:1930 — Modelos y Simulación (Laboratorio 3)
+    </footer>
+
+    <script src="JS/dinamicaSistemas.js"></script>
+</body>
+</html>

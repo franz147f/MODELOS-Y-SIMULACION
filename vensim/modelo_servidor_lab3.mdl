@@ -1,0 +1,214 @@
+{UTF-8}
+Peticiones en Cola = INTEG(
+	Flujo de Arribo de Peticiones - Flujo de Procesamiento Consultas Simples - Flujo de Procesamiento Transacciones BD - Flujo de Descarte por Timeout y Error,
+	15)
+	~	peticiones
+	~	Nivel (Stock) principal que acumula las solicitudes pendientes en el buffer del servidor.
+	|
+
+Flujo de Arribo de Peticiones = Tasa Base de Demanda * Factor de Control de Admision
+	~	peticiones/Hora
+	~	Flujo de entrada efectiva de solicitudes al servidor.
+	|
+
+Flujo de Procesamiento Consultas Simples = Proporcion Consultas Simples * (Peticiones en Cola / Tiempo Medio de Procesamiento) * Factor de Capacidad del Servidor * Eficiencia Operativa del Servidor
+	~	peticiones/Hora
+	~	Flujo de salida de consultas simples resueltas (60% de la carga nominal).
+	|
+
+Flujo de Procesamiento Transacciones BD = Proporcion Transacciones BD * (Peticiones en Cola / Tiempo Medio de Procesamiento) * Factor de Capacidad del Servidor * Eficiencia Operativa del Servidor
+	~	peticiones/Hora
+	~	Flujo de salida de transacciones de base de datos completadas (35% de la carga nominal).
+	|
+
+Flujo de Descarte por Timeout y Error = Peticiones en Cola * (Tasa Base de Error + Coeficiente de Timeout * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+	~	peticiones/Hora
+	~	Flujo de salida de peticiones descartadas por errores de red (5% base) y vencimiento de timeout por congestion.
+	|
+
+Indice de Saturacion del Servidor = Peticiones en Cola / Capacidad Nominal del Buffer
+	~	Dmnl
+	~	Variable Auxiliar 1: Ratio de ocupacion de la cola respecto a la capacidad nominal del buffer.
+	|
+
+Eficiencia Operativa del Servidor = 1 / (1 + Coeficiente de Contencion * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+	~	Dmnl
+	~	Variable Auxiliar 2: Eficiencia del servidor afectada por contencion de CPU y bloqueos de BD.
+	|
+
+Latencia Promedio del Sistema = Latencia Base Ponderada * (1 + (Coeficiente de Sensibilidad Latencia * Indice de Saturacion del Servidor) / Eficiencia Operativa del Servidor)
+	~	ms
+	~	Variable Auxiliar 3: Tiempo medio de respuesta en milisegundos.
+	|
+
+Porcentaje de Incumplimiento SLA = MIN(100, 5 + 18 * ((Latencia Promedio del Sistema - 155) / 131.75))
+	~	%
+	~	Variable Auxiliar 4: Porcentaje estimado de peticiones con Alta Latencia o Error frente al limite SLA del 15%.
+	|
+
+Factor de Control de Admision = MAX(0.1, 1 - 0.15 * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+	~	Dmnl
+	~	Variable Auxiliar 5: Mecanismo de backpressure que modera el ingreso cuando el buffer se satura.
+	|
+
+Tasa Base de Demanda = 120
+	~	peticiones/Hora
+	~	Parametro de arribo promedio horario (Lambda).
+	|
+
+Capacidad Nominal del Buffer = 100
+	~	peticiones
+	~	Capacidad de referencia del buffer de memoria del servidor.
+	|
+
+Factor de Capacidad del Servidor = 1
+	~	Dmnl
+	~	Multiplicador de capacidad de hardware/recursos del servidor (1 = estandar, >1 = escalado).
+	|
+
+Tiempo Medio de Procesamiento = 0.25
+	~	Hora
+	~	Tiempo caracteristico de residencia y evacuacion en cola.
+	|
+
+Proporcion Consultas Simples = 0.6
+	~	Dmnl
+	~	Proporcion de trafico correspondiente a consultas simples (60%).
+	|
+
+Proporcion Transacciones BD = 0.35
+	~	Dmnl
+	~	Proporcion de trafico correspondiente a transacciones de base de datos (35%).
+	|
+
+Tasa Base de Error = 0.2
+	~	1/Hora
+	~	Tasa especifica base de descarte equivalente al 5% del flujo total (0.05 / 0.25 h).
+	|
+
+Coeficiente de Timeout = 0.35
+	~	1/Hora
+	~	Incremento de tasa de descarte por vencimiento de timeout bajo saturacion.
+	|
+
+Coeficiente de Contencion = 1.2
+	~	Dmnl
+	~	Sensibilidad del servidor a bloqueos de BD y cambios de contexto (thrashing).
+	|
+
+Latencia Base Ponderada = 155
+	~	ms
+	~	Latencia base sin congestion (promedio ponderado entre simples y BD del Lab 2).
+	|
+
+Coeficiente de Sensibilidad Latencia = 0.85
+	~	Dmnl
+	~	Factor de impacto de la saturacion sobre la latencia de respuesta.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 24
+	~	Hora
+	~	Tiempo final de la simulacion (24 horas continuas).
+	|
+
+INITIAL TIME  = 0
+	~	Hora
+	~	Tiempo inicial de la simulacion.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Hora [0,?]
+	~	Frecuencia con la que se almacenan los resultados.
+	|
+
+TIME STEP  = 0.125
+	~	Hora [0,?]
+	~	Paso de integracion temporal para el metodo de Euler.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Peticiones en Cola,480,240,65,28,3,3,0,0,0,0,0,0
+12,2,48,140,240,10,8,0,3,0,0,-1,0,0,0
+1,3,5,1,4,0,0,22,0,0,0,-1--1--1,,1|(380,240)|
+1,4,5,2,100,0,0,22,0,0,0,-1--1--1,,1|(215,240)|
+11,5,48,290,240,6,8,34,3,0,0,1,0,0,0
+10,6,Flujo de Arribo de Peticiones,290,266,58,19,40,3,0,0,-1,0,0,0
+12,7,48,900,110,10,8,0,3,0,0,-1,0,0,0
+1,8,10,1,100,0,0,22,0,0,0,-1--1--1,,1|(580,110)|
+1,9,10,7,4,0,0,22,0,0,0,-1--1--1,,1|(810,110)|
+11,10,48,720,110,6,8,34,3,0,0,1,0,0,0
+10,11,Flujo de Procesamiento Consultas Simples,720,136,72,19,40,3,0,0,-1,0,0,0
+12,12,48,900,240,10,8,0,3,0,0,-1,0,0,0
+1,13,15,1,100,0,0,22,0,0,0,-1--1--1,,1|(600,240)|
+1,14,15,12,4,0,0,22,0,0,0,-1--1--1,,1|(810,240)|
+11,15,48,720,240,6,8,34,3,0,0,1,0,0,0
+10,16,Flujo de Procesamiento Transacciones BD,720,266,72,19,40,3,0,0,-1,0,0,0
+12,17,48,900,370,10,8,0,3,0,0,-1,0,0,0
+1,18,20,1,100,0,0,22,0,0,0,-1--1--1,,1|(580,370)|
+1,19,20,17,4,0,0,22,0,0,0,-1--1--1,,1|(810,370)|
+11,20,48,720,370,6,8,34,3,0,0,1,0,0,0
+10,21,Flujo de Descarte por Timeout y Error,720,396,68,19,40,3,0,0,-1,0,0,0
+10,22,Indice de Saturacion del Servidor,480,420,62,19,8,3,0,0,0,0,0,0
+10,23,Eficiencia Operativa del Servidor,600,310,62,19,8,3,0,0,0,0,0,0
+10,24,Latencia Promedio del Sistema,640,500,60,19,8,3,0,0,0,0,0,0
+10,25,Porcentaje de Incumplimiento SLA,880,500,65,19,8,3,0,0,0,0,0,0
+10,26,Factor de Control de Admision,290,390,58,19,8,3,0,0,0,0,0,0
+10,27,Tasa Base de Demanda,160,140,52,19,8,3,0,0,0,0,0,0
+10,29,Capacidad Nominal del Buffer,340,490,58,19,8,3,0,0,0,0,0,0
+10,30,Factor de Capacidad del Servidor,560,50,62,19,8,3,0,0,0,0,0,0
+10,31,Tiempo Medio de Procesamiento,370,80,62,19,8,3,0,0,0,0,0,0
+10,32,Proporcion Consultas Simples,880,45,58,19,8,3,0,0,0,0,0,0
+10,33,Proporcion Transacciones BD,910,185,58,19,8,3,0,0,0,0,0,0
+10,34,Tasa Base de Error,910,315,48,19,8,3,0,0,0,0,0,0
+10,35,Coeficiente de Timeout,880,435,52,19,8,3,0,0,0,0,0,0
+10,36,Coeficiente de Contencion,480,520,55,19,8,3,0,0,0,0,0,0
+10,37,Latencia Base Ponderada,640,575,55,19,8,3,0,0,0,0,0,0
+10,38,Coeficiente de Sensibilidad Latencia,480,575,68,19,8,3,0,0,0,0,0,0
+1,40,27,6,0,0,0,0,0,64,0,-1--1--1,,1|(225,200)|
+1,41,26,6,0,0,0,0,0,64,0,-1--1--1,,1|(290,330)|
+1,42,32,11,0,0,0,0,0,64,0,-1--1--1,,1|(800,90)|
+1,43,1,11,0,0,0,0,0,64,0,-1--1--1,,1|(600,175)|
+1,44,31,11,0,0,0,0,0,64,0,-1--1--1,,1|(545,105)|
+1,45,30,11,0,0,0,0,0,64,0,-1--1--1,,1|(640,90)|
+1,46,23,11,0,0,0,0,0,64,0,-1--1--1,,1|(660,220)|
+1,47,33,16,0,0,0,0,0,64,0,-1--1--1,,1|(815,225)|
+1,48,1,16,0,0,0,0,0,64,0,-1--1--1,,1|(600,255)|
+1,49,31,16,0,0,0,0,0,64,0,-1--1--1,,1|(545,170)|
+1,50,30,16,0,0,0,0,0,64,0,-1--1--1,,1|(640,155)|
+1,51,23,16,0,0,0,0,0,64,0,-1--1--1,,1|(660,288)|
+1,52,1,21,0,0,0,0,0,64,0,-1--1--1,,1|(600,320)|
+1,53,34,21,0,0,0,0,0,64,0,-1--1--1,,1|(815,355)|
+1,54,35,21,0,0,0,0,0,64,0,-1--1--1,,1|(800,415)|
+1,55,22,21,0,0,0,0,0,64,0,-1--1--1,,1|(600,408)|
+1,56,1,22,0,0,0,0,0,64,0,-1--1--1,,1|(480,330)|
+1,57,29,22,0,0,0,0,0,64,0,-1--1--1,,1|(410,455)|
+1,58,36,23,0,0,0,0,0,64,0,-1--1--1,,1|(540,415)|
+1,59,22,23,0,0,0,0,0,64,0,-1--1--1,,1|(540,365)|
+1,60,37,24,0,0,0,0,0,64,0,-1--1--1,,1|(640,538)|
+1,61,38,24,0,0,0,0,0,64,0,-1--1--1,,1|(560,538)|
+1,62,22,24,0,0,0,0,0,64,0,-1--1--1,,1|(560,460)|
+1,63,23,24,0,0,0,0,0,64,0,-1--1--1,,1|(620,405)|
+1,64,24,25,0,0,0,0,0,64,0,-1--1--1,,1|(760,500)|
+1,65,22,26,0,0,0,0,0,64,0,-1--1--1,,1|(385,405)|
+///---\\\
+:L<%^E!@
+9:Current.vdf
+15:0,0,0,0,0,0
+19:100,0
+27:2,
+34:0,
+4:Time
+5:Peticiones en Cola
+24:0
+25:24
+26:24

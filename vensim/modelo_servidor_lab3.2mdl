@@ -1,0 +1,144 @@
+{UTF-8}
+Peticiones en Cola = INTEG(
+    Flujo de Arribo de Peticiones - Flujo de Procesamiento Consultas Simples - Flujo de Procesamiento Transacciones BD - Flujo de Descarte por Timeout y Error,
+    Cola Inicial)
+    ~ peticiones
+    ~ Nivel (Stock) principal que acumula las solicitudes pendientes en el buffer del servidor.
+    |
+
+Flujo de Arribo de Peticiones = Tasa Base de Demanda * Factor de Control de Admision
+    ~ peticiones/Hora
+    ~ Flujo de entrada efectiva de solicitudes al servidor.
+    |
+
+Flujo de Procesamiento Consultas Simples = Proporcion Consultas Simples * (Peticiones en Cola / Tiempo Medio de Procesamiento) * Factor de Capacidad del Servidor * Eficiencia Operativa del Servidor
+    ~ peticiones/Hora
+    ~ Flujo de salida de consultas simples resueltas (60% de la carga nominal).
+    |
+
+Flujo de Procesamiento Transacciones BD = Proporcion Transacciones BD * (Peticiones en Cola / Tiempo Medio de Procesamiento) * Factor de Capacidad del Servidor * Eficiencia Operativa del Servidor
+    ~ peticiones/Hora
+    ~ Flujo de salida de transacciones de base de datos completadas (35% de la carga nominal).
+    |
+
+Flujo de Descarte por Timeout y Error = Peticiones en Cola * (Tasa Base de Error + Coeficiente de Timeout * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+    ~ peticiones/Hora
+    ~ Flujo de salida de peticiones descartadas por errores de red (5% base) y vencimiento de timeout por congestion.
+    |
+
+Indice de Saturacion del Servidor = Peticiones en Cola / Capacidad Nominal del Buffer
+    ~ Dmnl
+    ~ Variable Auxiliar 1: Ratio de ocupacion de la cola respecto a la capacidad nominal del buffer.
+    |
+
+Eficiencia Operativa del Servidor = 1 / (1 + Coeficiente de Contencion * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+    ~ Dmnl
+    ~ Variable Auxiliar 2: Eficiencia del servidor afectada por contencion de CPU y bloqueos de BD.
+    |
+
+Latencia Promedio del Sistema = Latencia Base Ponderada * (1 + (Coeficiente de Sensibilidad Latencia * Indice de Saturacion del Servidor) / Eficiencia Operativa del Servidor)
+    ~ ms
+    ~ Variable Auxiliar 3: Tiempo medio de respuesta en milisegundos.
+    |
+
+Porcentaje de Incumplimiento SLA = MIN(100, 100 * (0.05 + 0.18 * Indice de Saturacion del Servidor / Eficiencia Operativa del Servidor))
+    ~ %
+    ~ Variable Auxiliar 4: Porcentaje estimado de peticiones con Alta Latencia o Error frente al limite SLA del 15%.
+    |
+
+Factor de Control de Admision = MAX(0.1, 1 - 0.15 * Indice de Saturacion del Servidor * Indice de Saturacion del Servidor)
+    ~ Dmnl
+    ~ Variable Auxiliar 5: Mecanismo de backpressure que modera el ingreso cuando el buffer se satura.
+    |
+
+Tasa Base de Demanda = 120
+    ~ peticiones/Hora
+    ~ Parametro de arribo promedio horario (Lambda).
+    |
+
+Cola Inicial = 15
+    ~ peticiones
+    ~ Valor inicial del stock Peticiones en Cola en t = 0.
+    |
+
+Capacidad Nominal del Buffer = 100
+    ~ peticiones
+    ~ Capacidad de referencia del buffer de memoria del servidor.
+    |
+
+Factor de Capacidad del Servidor = 1
+    ~ Dmnl
+    ~ Multiplicador de capacidad de hardware/recursos del servidor (1 = estandar, >1 = escalado).
+    |
+
+Tiempo Medio de Procesamiento = 0.25
+    ~ Hora
+    ~ Tiempo caracteristico de residencia y evacuacion en cola.
+    |
+
+Proporcion Consultas Simples = 0.6
+    ~ Dmnl
+    ~ Proporcion de trafico correspondiente a consultas simples (60%).
+    |
+
+Proporcion Transacciones BD = 0.35
+    ~ Dmnl
+    ~ Proporcion de trafico correspondiente a transacciones de base de datos (35%).
+    |
+
+Tasa Base de Error = 0.2
+    ~ 1/Hora
+    ~ Tasa especifica base de descarte equivalente al 5% del flujo total (0.05 / 0.25 h).
+    |
+
+Coeficiente de Timeout = 0.35
+    ~ 1/Hora
+    ~ Incremento de tasa de descarte por vencimiento de timeout bajo saturacion.
+    |
+
+Coeficiente de Contencion = 1.2
+    ~ Dmnl
+    ~ Sensibilidad del servidor a bloqueos de BD y cambios de contexto (thrashing).
+    |
+
+Latencia Base Ponderada = 155
+    ~ ms
+    ~ Latencia base sin congestion (promedio ponderado entre simples y BD del Lab 2).
+    |
+
+Coeficiente de Sensibilidad Latencia = 0.85
+    ~ Dmnl
+    ~ Factor de impacto de la saturacion sobre la latencia de respuesta.
+    |
+
+Umbral Maximo SLA = 15
+    ~ %
+    ~ Meta maxima tolerada de peticiones con bajo rendimiento segun hipotesis SLA.
+    |
+
+********************************************************
+    .Control
+********************************************************~
+    Simulation Control Parameters
+    |
+
+FINAL TIME  = 24
+    ~ Hora
+    ~ Tiempo final de la simulacion (24 horas continuas).
+    |
+
+INITIAL TIME  = 0
+    ~ Hora
+    ~ Tiempo inicial de la simulacion.
+    |
+
+SAVEPER  = 
+        TIME STEP
+    ~ Hora [0,?]
+    ~ Frecuencia con la que se almacenan los resultados.
+    |
+
+TIME STEP  = 0.125
+    ~ Hora [0,?]
+    ~ Paso de integracion temporal para el metodo de Euler.
+    |
